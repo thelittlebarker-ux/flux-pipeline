@@ -1,9 +1,8 @@
 FROM node:18-alpine
 WORKDIR /app
-COPY package*.json ./
+COPY . .
 RUN npm install --production
-COPY server.js ./
-COPY public ./public
-RUN mkdir -p data
+RUN mkdir -p data public
+RUN if [ -f index.html ] && [ ! -f public/index.html ]; then mv index.html public/index.html; fi
 EXPOSE 3000
 CMD ["node", "server.js"]
