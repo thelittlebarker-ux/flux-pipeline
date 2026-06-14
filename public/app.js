@@ -69,7 +69,7 @@ function gradeOf(s) {
   return s >= 90 ? 'A+' : s >= 80 ? 'A' : s >= 70 ? 'B' : s >= 60 ? 'C' : s >= 50 ? 'D' : 'E';
 }
 function gradeColor(s) {
-  return s >= 80 ? '#19e3a5' : s >= 60 ? '#2dd4ef' : s >= 50 ? 'var(--warn)' : '#ff5d6c';
+  return s >= 80 ? '#0aa472' : s >= 60 ? '#108fb0' : s >= 50 ? '#c47a08' : '#dc4a5c';
 }
 
 /* ---------- tiny SVG chart primitives ---------- */
@@ -106,7 +106,7 @@ function Gauge({
     cy: size / 2,
     r: r,
     fill: "none",
-    stroke: "#16212d",
+    stroke: "#e6ecf3",
     strokeWidth: "11"
   }), /*#__PURE__*/React.createElement("circle", {
     cx: size / 2,
@@ -128,13 +128,13 @@ function Gauge({
     textAnchor: "middle",
     fontSize: "26",
     fontWeight: "800",
-    fill: "#e8eef5"
+    fill: "#0f1d2e"
   }, fmt(value, value < 10 ? 1 : 0)), /*#__PURE__*/React.createElement("text", {
     x: "50%",
     y: "63%",
     textAnchor: "middle",
     fontSize: "11",
-    fill: "#8aa0b5"
+    fill: "#5b6b7d"
   }, label));
 }
 function AreaChart({
@@ -668,7 +668,7 @@ function Lab({
     key: k,
     style: {
       padding: '7px 0',
-      borderBottom: '1px solid #15202b'
+      borderBottom: '1px solid var(--line2)'
     }
   }, /*#__PURE__*/React.createElement("span", {
     className: "small muted"
@@ -989,16 +989,19 @@ function Rewards({
       className: "card reward",
       key: item.id,
       style: {
-        background: '#0e151d'
+        background: 'var(--panel2)'
       }
     }, /*#__PURE__*/React.createElement("div", {
       className: "ic"
     }, item.icon), /*#__PURE__*/React.createElement("div", {
-      className: "b",
-      style: {
-        minHeight: 38
-      }
+      className: "b"
     }, item.name), /*#__PURE__*/React.createElement("div", {
+      className: "small muted",
+      style: {
+        minHeight: 34,
+        lineHeight: 1.4
+      }
+    }, item.desc), /*#__PURE__*/React.createElement("div", {
       className: "row between"
     }, /*#__PURE__*/React.createElement("span", {
       className: "pill good"

@@ -28,7 +28,7 @@ function computeTrip(p){
   return {consumption,energyUsedKwh,co2SavedKg,fuelSaved,ecoScore,pointsEarned:pts,harshB,harshA};
 }
 function gradeOf(s){return s>=90?'A+':s>=80?'A':s>=70?'B':s>=60?'C':s>=50?'D':'E';}
-function gradeColor(s){return s>=80?'#19e3a5':s>=60?'#2dd4ef':s>=50?'var(--warn)':'#ff5d6c';}
+function gradeColor(s){return s>=80?'#0aa472':s>=60?'#108fb0':s>=50?'#c47a08':'#dc4a5c';}
 
 /* ---------- tiny SVG chart primitives ---------- */
 function Gauge({value,max=100,size=140,label,unit,color}){
@@ -38,12 +38,12 @@ function Gauge({value,max=100,size=140,label,unit,color}){
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0%" stopColor="#19e3a5"/><stop offset="100%" stopColor="#2dd4ef"/></linearGradient></defs>
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#16212d" strokeWidth="11"/>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#e6ecf3" strokeWidth="11"/>
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color==='grad'?'url(#gg)':color} strokeWidth="11"
         strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c*(1-pct)}
         transform={`rotate(-90 ${size/2} ${size/2})`} style={{transition:'stroke-dashoffset .6s'}}/>
-      <text x="50%" y="47%" textAnchor="middle" fontSize="26" fontWeight="800" fill="#e8eef5">{fmt(value,value<10?1:0)}</text>
-      <text x="50%" y="63%" textAnchor="middle" fontSize="11" fill="#8aa0b5">{label}</text>
+      <text x="50%" y="47%" textAnchor="middle" fontSize="26" fontWeight="800" fill="#0f1d2e">{fmt(value,value<10?1:0)}</text>
+      <text x="50%" y="63%" textAnchor="middle" fontSize="11" fill="#5b6b7d">{label}</text>
     </svg>
   );
 }
@@ -203,7 +203,7 @@ function Lab({me,onLogged,toast}){
           ['Eco-driving bonus',Math.round(r.ecoScore/100*CFG.ECO_BONUS)],
           ['CO₂ avoided',Math.round(r.co2SavedKg*CFG.POINTS_PER_KG)],
           ['Battery-friendly charge',p.batteryFriendlyCharge?CFG.CHARGE_BONUS:0]].map(([k,val])=>
-          <div className="row between" key={k} style={{padding:'7px 0',borderBottom:'1px solid #15202b'}}>
+          <div className="row between" key={k} style={{padding:'7px 0',borderBottom:'1px solid var(--line2)'}}>
             <span className="small muted">{k}</span><span className="b">+{fmt(val)}</span></div>)}
         <div className="row between" style={{paddingTop:10}}><span className="b">Total this drive</span>
           <span className="b" style={{color:'var(--accent)',fontSize:18}}>+{fmt(r.pointsEarned)}</span></div>
@@ -303,9 +303,10 @@ function Rewards({me,reload,toast}){
     <div className="card"><h3>Rewards Catalogue</h3>
       <div className="grid g4">
         {data.catalog.map(item=>{const can=data.balance>=item.cost;return(
-          <div className="card reward" key={item.id} style={{background:'#0e151d'}}>
+          <div className="card reward" key={item.id} style={{background:'var(--panel2)'}}>
             <div className="ic">{item.icon}</div>
-            <div className="b" style={{minHeight:38}}>{item.name}</div>
+            <div className="b">{item.name}</div>
+            <div className="small muted" style={{minHeight:34,lineHeight:1.4}}>{item.desc}</div>
             <div className="row between"><span className="pill good">{item.category}</span><span className="b">{fmt(item.cost)} pts</span></div>
             <button className="btn" style={{opacity:can?1:.5}} disabled={!can||busy===item.id} onClick={()=>redeem(item)}>
               {busy===item.id?<span className="spin"/>:can?'Redeem':'Need '+fmt(item.cost-data.balance)+' more'}</button>
