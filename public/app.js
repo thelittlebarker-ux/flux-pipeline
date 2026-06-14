@@ -428,6 +428,7 @@ function Dashboard({
 }
 function Lab({
   me,
+  userId,
   onLogged,
   toast
 }) {
@@ -456,6 +457,7 @@ function Lab({
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+          userId,
           params: {
             distanceKm: p.distanceKm,
             aggression: p.aggression,
@@ -919,15 +921,16 @@ function Impact({
 }
 function Rewards({
   me,
+  userId,
   reload,
   toast
 }) {
   const [data, setData] = useState(null);
   const [busy, setBusy] = useState(null);
-  const load = () => api('/api/rewards').then(setData);
+  const load = () => api('/api/rewards?userId=' + userId).then(setData);
   useEffect(() => {
     load();
-  }, [me]);
+  }, [me, userId]);
   if (!data) return /*#__PURE__*/React.createElement("div", {
     className: "card muted"
   }, "Loading rewards\u2026");
@@ -944,7 +947,8 @@ function Rewards({
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          itemId: item.id
+          itemId: item.id,
+          userId
         })
       });
       toast(`Redeemed ${item.name}! Code ${res.redemption.code}`);
@@ -1028,12 +1032,13 @@ function Rewards({
   }, new Date(r.redeemedAt).toLocaleDateString())))))));
 }
 function Challenges({
-  me
+  me,
+  userId
 }) {
   const [data, setData] = useState(null);
   useEffect(() => {
-    api('/api/challenges').then(setData);
-  }, [me]);
+    api('/api/challenges?userId=' + userId).then(setData);
+  }, [me, userId]);
   if (!data) return /*#__PURE__*/React.createElement("div", {
     className: "card muted"
   }, "Loading challenges\u2026");
@@ -1091,13 +1096,14 @@ function Challenges({
   }, "Earned"))))));
 }
 function Leaderboard({
-  me
+  me,
+  userId
 }) {
   const [metric, setMetric] = useState('points');
   const [data, setData] = useState(null);
   useEffect(() => {
     api('/api/leaderboard?metric=' + metric).then(setData);
-  }, [metric]);
+  }, [metric, me]);
   const cols = {
     points: 'Eco-Credits',
     co2SavedKg: 'CO₂ Saved (kg)',
@@ -1130,21 +1136,21 @@ function Leaderboard({
     className: "muted"
   }, "Loading\u2026") : /*#__PURE__*/React.createElement("table", null, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("th", null, "#"), /*#__PURE__*/React.createElement("th", null, "Driver"), /*#__PURE__*/React.createElement("th", null, "Tier"), /*#__PURE__*/React.createElement("th", null, cols[metric]), /*#__PURE__*/React.createElement("th", null, "Eco-Credits"), /*#__PURE__*/React.createElement("th", null, "CO\u2082"))), /*#__PURE__*/React.createElement("tbody", null, data.entries.map(e => /*#__PURE__*/React.createElement("tr", {
     key: e.userId,
-    className: e.isPrimary ? 'me' : ''
+    className: e.userId === userId ? 'me' : ''
   }, /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("div", {
     className: "ranknum",
     style: e.rank <= 3 ? {
       background: ['#e0b341', '#9aa5b1', '#b08d57'][e.rank - 1],
-      color: '#04121c'
+      color: '#04201a'
     } : {}
   }, e.rank)), /*#__PURE__*/React.createElement("td", {
     className: "b"
-  }, e.name, e.isPrimary && /*#__PURE__*/React.createElement("span", {
+  }, e.name, e.userId === userId && /*#__PURE__*/React.createElement("span", {
     className: "pill good",
     style: {
       marginLeft: 8
     }
-  }, "You")), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("span", {
+  }, "Viewing")), /*#__PURE__*/React.createElement("td", null, /*#__PURE__*/React.createElement("span", {
     className: "pill good"
   }, e.tier)), /*#__PURE__*/React.createElement("td", {
     className: "b"
@@ -1169,19 +1175,121 @@ const TITLES = {
   challenges: ['Challenges & Badges', 'Weekly goals and milestones that keep driving rewarding'],
   board: ['Leaderboard', 'See how you stack up against the DrivEv community']
 };
+
+/* Guided tour steps: each navigates to a view and explains why it matters. */
+const TOUR = [['dash', 'Your impact at a glance', 'CO₂ avoided, Eco-Credits, driving grade and battery health — all live and personalised to the driver.'], ['lab', 'The Simulator Lab', 'Drag the sliders and watch energy, money, battery stress and credits respond instantly. This real-time loop is the daily hook.'], ['battery', 'Protect the battery', 'State of Health, warranty tracking and tailored charging advice turn passive data into active asset protection.'], ['impact', 'Real-world savings', 'Every electric kilometre becomes CO₂, fuel and money saved — the tangible payoff that keeps the app open.'], ['rewards', 'Spend Eco-Credits', 'Redeem real partner perks: charging sessions, car washes, coffee, service credit and more.'], ['challenges', 'Build the habit', 'Weekly challenges, streaks and badges turn one-off tracking into a daily routine.'], ['board', 'Community leaderboard', 'Friendly competition and weekly resets drive engagement across the whole fleet.']];
+function Onboarding({
+  onDone,
+  onTour
+}) {
+  const [step, setStep] = useState(0);
+  useEffect(() => {
+    if (step === 1) {
+      const t = setTimeout(() => setStep(2), 1600);
+      return () => clearTimeout(t);
+    }
+  }, [step]);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "overlay"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "modal"
+  }, step === 0 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "logo-xl"
+  }, "D"), /*#__PURE__*/React.createElement("h2", null, "Welcome to DrivEv Nexus"), /*#__PURE__*/React.createElement("p", null, "The connected-EV app that turns every electric kilometre into real benefit \u2014 and keeps drivers coming back."), /*#__PURE__*/React.createElement("div", {
+    className: "feat"
+  }, /*#__PURE__*/React.createElement("span", null, "\uD83C\uDF9B\uFE0F"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "Live telematics & eco-coaching"), " \u2014 see exactly how you drive.")), /*#__PURE__*/React.createElement("div", {
+    className: "feat"
+  }, /*#__PURE__*/React.createElement("span", null, "\uD83D\uDD0B"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "Battery-life protection"), " \u2014 guard your range and resale value.")), /*#__PURE__*/React.createElement("div", {
+    className: "feat"
+  }, /*#__PURE__*/React.createElement("span", null, "\u2B50"), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "Eco-Credits & real rewards"), " \u2014 charging, car washes, coffee and more.")), /*#__PURE__*/React.createElement("button", {
+    className: "btn",
+    onClick: () => setStep(1)
+  }, "Connect my DrivEv"), /*#__PURE__*/React.createElement("button", {
+    className: "btn ghost",
+    onClick: onDone
+  }, "Skip intro")), step === 1 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    className: "spin-xl"
+  }), /*#__PURE__*/React.createElement("h2", null, "Connecting to your DrivEv\u2026"), /*#__PURE__*/React.createElement("p", null, "Securely pairing telematics, battery and charging data.")), step === 2 && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 54
+    }
+  }, "\u2705"), /*#__PURE__*/React.createElement("h2", null, "Connected: DrivEv Aero\xA0S"), /*#__PURE__*/React.createElement("p", null, "Trip history synced. Your impact, battery health and Eco-Credits are ready to explore."), /*#__PURE__*/React.createElement("button", {
+    className: "btn",
+    onClick: onTour
+  }, "Take the 60-second tour"), /*#__PURE__*/React.createElement("button", {
+    className: "btn ghost",
+    onClick: onDone
+  }, "Explore on my own"))));
+}
+function Tour({
+  step,
+  setView,
+  next,
+  prev,
+  done
+}) {
+  const [v, title, body] = TOUR[step];
+  useEffect(() => {
+    setView(v);
+  }, [step]);
+  const last = step === TOUR.length - 1;
+  return /*#__PURE__*/React.createElement("div", {
+    className: "tourcard"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "small muted b",
+    style: {
+      color: 'var(--accent)'
+    }
+  }, "GUIDED TOUR \xB7 ", step + 1, " of ", TOUR.length), /*#__PURE__*/React.createElement("h3", null, title), /*#__PURE__*/React.createElement("p", null, body), /*#__PURE__*/React.createElement("div", {
+    className: "row between"
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn ghost small",
+    onClick: done
+  }, "Skip tour"), /*#__PURE__*/React.createElement("div", {
+    className: "row",
+    style: {
+      gap: 8
+    }
+  }, step > 0 && /*#__PURE__*/React.createElement("button", {
+    className: "btn ghost small",
+    onClick: prev
+  }, "Back"), /*#__PURE__*/React.createElement("button", {
+    className: "btn small",
+    onClick: last ? done : next
+  }, last ? 'Finish ✓' : 'Next →'))));
+}
 function App() {
   const [view, setView] = useState('dash');
   const [me, setMe] = useState(null);
+  const [userId, setUserId] = useState('u_you');
+  const [personas, setPersonas] = useState([]);
   const [toastMsg, setToastMsg] = useState(null);
+  const [onboard, setOnboard] = useState(() => {
+    try {
+      return !localStorage.getItem('drivev_onboarded');
+    } catch (e) {
+      return true;
+    }
+  });
+  const [tourStep, setTourStep] = useState(-1);
   const tRef = useRef();
-  const load = () => api('/api/me').then(setMe).catch(e => setToastMsg('Load error: ' + e.message));
+  const load = uid => api('/api/me?userId=' + (uid || userId)).then(setMe).catch(e => setToastMsg('Load error: ' + e.message));
   useEffect(() => {
-    load();
+    load(userId);
+  }, [userId]);
+  useEffect(() => {
+    api('/api/personas').then(setPersonas).catch(() => {});
   }, []);
   const toast = m => {
     setToastMsg(m);
     clearTimeout(tRef.current);
     tRef.current = setTimeout(() => setToastMsg(null), 4200);
+  };
+  const finishOnboard = () => {
+    try {
+      localStorage.setItem('drivev_onboarded', '1');
+    } catch (e) {}
+    setOnboard(false);
   };
   if (!me) return /*#__PURE__*/React.createElement("div", {
     className: "loading"
@@ -1212,11 +1320,17 @@ function App() {
     style: {
       color: 'var(--txt)'
     }
-  }, me.primaryVehicle ? me.primaryVehicle.make + ' ' + me.primaryVehicle.model : ''), /*#__PURE__*/React.createElement("div", null, me.primaryVehicle ? fmt(me.primaryVehicle.odometerKm) + ' km · ' + me.primaryVehicle.batteryCapacityKwh + ' kWh' : ''), /*#__PURE__*/React.createElement("div", {
+  }, me.primaryVehicle ? me.primaryVehicle.make + ' ' + me.primaryVehicle.model : ''), /*#__PURE__*/React.createElement("div", null, me.primaryVehicle ? fmt(me.primaryVehicle.odometerKm) + ' km · ' + me.primaryVehicle.batteryCapacityKwh + ' kWh' : ''), /*#__PURE__*/React.createElement("button", {
+    className: "btn ghost small",
     style: {
-      marginTop: 8
+      marginTop: 12,
+      width: '100%'
+    },
+    onClick: () => {
+      setView('dash');
+      setTourStep(0);
     }
-  }, "Telematics + battery + rewards in one loop."))), /*#__PURE__*/React.createElement("main", {
+  }, "\u21BB Replay tour"))), /*#__PURE__*/React.createElement("main", {
     className: "main"
   }, /*#__PURE__*/React.createElement("div", {
     className: "topbar"
@@ -1224,7 +1338,15 @@ function App() {
     className: "pagetitle"
   }, /*#__PURE__*/React.createElement("h1", null, title), /*#__PURE__*/React.createElement("p", null, sub)), /*#__PURE__*/React.createElement("div", {
     className: "chips"
-  }, /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("select", {
+    className: "select",
+    value: userId,
+    onChange: e => setUserId(e.target.value),
+    title: "Switch demo persona"
+  }, personas.map(p => /*#__PURE__*/React.createElement("option", {
+    key: p.id,
+    value: p.id
+  }, p.isPrimary ? '★ ' : '', p.name, " \u2014 ", p.persona))), /*#__PURE__*/React.createElement("div", {
     className: "chip"
   }, /*#__PURE__*/React.createElement("span", {
     className: "emoji-ic"
@@ -1246,6 +1368,7 @@ function App() {
     go: setView
   }), view === 'lab' && /*#__PURE__*/React.createElement(Lab, {
     me: me,
+    userId: userId,
     onLogged: setMe,
     toast: toast
   }), view === 'battery' && /*#__PURE__*/React.createElement(BatteryView, {
@@ -1254,13 +1377,29 @@ function App() {
     me: me
   }), view === 'rewards' && /*#__PURE__*/React.createElement(Rewards, {
     me: me,
-    reload: load,
+    userId: userId,
+    reload: () => load(userId),
     toast: toast
   }), view === 'challenges' && /*#__PURE__*/React.createElement(Challenges, {
-    me: me
+    me: me,
+    userId: userId
   }), view === 'board' && /*#__PURE__*/React.createElement(Leaderboard, {
-    me: me
-  })), toastMsg && /*#__PURE__*/React.createElement("div", {
+    me: me,
+    userId: userId
+  })), onboard && /*#__PURE__*/React.createElement(Onboarding, {
+    onDone: finishOnboard,
+    onTour: () => {
+      finishOnboard();
+      setView('dash');
+      setTourStep(0);
+    }
+  }), tourStep >= 0 && /*#__PURE__*/React.createElement(Tour, {
+    step: tourStep,
+    setView: setView,
+    next: () => setTourStep(s => s + 1),
+    prev: () => setTourStep(s => s - 1),
+    done: () => setTourStep(-1)
+  }), toastMsg && /*#__PURE__*/React.createElement("div", {
     className: "toast"
   }, /*#__PURE__*/React.createElement("div", {
     className: "b",

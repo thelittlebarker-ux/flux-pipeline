@@ -139,7 +139,7 @@ function Dashboard({me,go}){
   </div>;
 }
 
-function Lab({me,onLogged,toast}){
+function Lab({me,userId,onLogged,toast}){
   const v=me.primaryVehicle||{};
   const [p,setP]=useState({distanceKm:25,aggression:0.35,regen:0.6,avgSpeedKph:60,parkTemp:28,batteryFriendlyCharge:true});
   const [busy,setBusy]=useState(false);
@@ -150,7 +150,7 @@ function Lab({me,onLogged,toast}){
     setBusy(true);
     try{
       const res=await api('/api/trips/simulate',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({params:{distanceKm:p.distanceKm,aggression:p.aggression,regen:p.regen,avgSpeedKph:p.avgSpeedKph,batteryFriendlyCharge:p.batteryFriendlyCharge}})});
+        body:JSON.stringify({userId,params:{distanceKm:p.distanceKm,aggression:p.aggression,regen:p.regen,avgSpeedKph:p.avgSpeedKph,batteryFriendlyCharge:p.batteryFriendlyCharge}})});
       toast(`Drive logged • +${fmt(res.trip.pointsEarned)} Eco-Credits • Grade ${res.trip.feedback.grade}`);
       onLogged(res.profile);
     }catch(e){toast('Error: '+e.message);}finally{setBusy(false);}
@@ -281,16 +281,16 @@ function Impact({me}){
   </div>;
 }
 
-function Rewards({me,reload,toast}){
+function Rewards({me,userId,reload,toast}){
   const [data,setData]=useState(null);
   const [busy,setBusy]=useState(null);
-  const load=()=>api('/api/rewards').then(setData);
-  useEffect(()=>{load();},[me]);
+  const load=()=>api('/api/rewards?userId='+userId).then(setData);
+  useEffect(()=>{load();},[me,userId]);
   if(!data) return <div className="card muted">Loading rewards…</div>;
   const redeem=async(item)=>{
     if(data.balance<item.cost){toast('Not enough Eco-Credits yet — keep driving!');return;}
     setBusy(item.id);
-    try{const res=await api('/api/rewards/redeem',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({itemId:item.id})});
+    try{const res=await api('/api/rewards/redeem',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({itemId:item.id,userId})});
       toast(`Redeemed ${item.name}! Code ${res.redemption.code}`);await load();reload();
     }catch(e){toast('Error: '+e.message);}finally{setBusy(null);}
   };
@@ -320,9 +320,9 @@ function Rewards({me,reload,toast}){
   </div>;
 }
 
-function Challenges({me}){
+function Challenges({me,userId}){
   const [data,setData]=useState(null);
-  useEffect(()=>{api('/api/challenges').then(setData);},[me]);
+  useEffect(()=>{api('/api/challenges?userId='+userId).then(setData);},[me,userId]);
   if(!data) return <div className="card muted">Loading challenges…</div>;
   return <div className="grid" style={{gap:16}}>
     <div className="grid g2">
@@ -344,10 +344,10 @@ function Challenges({me}){
   </div>;
 }
 
-function Leaderboard({me}){
+function Leaderboard({me,userId}){
   const [metric,setMetric]=useState('points');
   const [data,setData]=useState(null);
-  useEffect(()=>{api('/api/leaderboard?metric='+metric).then(setData);},[metric]);
+  useEffect(()=>{api('/api/leaderboard?metric='+metric).then(setData);},[metric,me]);
   const cols={points:'Eco-Credits',co2SavedKg:'CO₂ Saved (kg)',avgEco:'Avg Eco',distanceKm:'Distance (km)'};
   return <div className="grid" style={{gap:16}}>
     <div className="card">
@@ -355,9 +355,9 @@ function Leaderboard({me}){
         <div className="seg">{Object.keys(cols).map(k=><button key={k} className={metric===k?'on':''} onClick={()=>setMetric(k)}>{cols[k].split(' ')[0]}</button>)}</div></div>
       {!data?<div className="muted">Loading…</div>:
       <table><thead><tr><th>#</th><th>Driver</th><th>Tier</th><th>{cols[metric]}</th><th>Eco-Credits</th><th>CO₂</th></tr></thead><tbody>
-        {data.entries.map(e=><tr key={e.userId} className={e.isPrimary?'me':''}>
-          <td><div className="ranknum" style={e.rank<=3?{background:['#e0b341','#9aa5b1','#b08d57'][e.rank-1],color:'#04121c'}:{}}>{e.rank}</div></td>
-          <td className="b">{e.name}{e.isPrimary&&<span className="pill good" style={{marginLeft:8}}>You</span>}</td>
+        {data.entries.map(e=><tr key={e.userId} className={e.userId===userId?'me':''}>
+          <td><div className="ranknum" style={e.rank<=3?{background:['#e0b341','#9aa5b1','#b08d57'][e.rank-1],color:'#04201a'}:{}}>{e.rank}</div></td>
+          <td className="b">{e.name}{e.userId===userId&&<span className="pill good" style={{marginLeft:8}}>Viewing</span>}</td>
           <td><span className="pill good">{e.tier}</span></td>
           <td className="b">{metric==='co2SavedKg'?fmt(e.co2SavedKg):metric==='distanceKm'?fmt(e.distanceKm):metric==='avgEco'?e.avgEco:fmt(e.points)}</td>
           <td>{fmt(e.points)}</td><td className="muted">{fmt(e.co2SavedKg)} kg</td>
@@ -381,14 +381,78 @@ const TITLES={dash:['Dashboard','Your live telematics, impact and loyalty snapsh
   challenges:['Challenges & Badges','Weekly goals and milestones that keep driving rewarding'],
   board:['Leaderboard','See how you stack up against the DrivEv community']};
 
+/* Guided tour steps: each navigates to a view and explains why it matters. */
+const TOUR=[
+  ['dash','Your impact at a glance','CO₂ avoided, Eco-Credits, driving grade and battery health — all live and personalised to the driver.'],
+  ['lab','The Simulator Lab','Drag the sliders and watch energy, money, battery stress and credits respond instantly. This real-time loop is the daily hook.'],
+  ['battery','Protect the battery','State of Health, warranty tracking and tailored charging advice turn passive data into active asset protection.'],
+  ['impact','Real-world savings','Every electric kilometre becomes CO₂, fuel and money saved — the tangible payoff that keeps the app open.'],
+  ['rewards','Spend Eco-Credits','Redeem real partner perks: charging sessions, car washes, coffee, service credit and more.'],
+  ['challenges','Build the habit','Weekly challenges, streaks and badges turn one-off tracking into a daily routine.'],
+  ['board','Community leaderboard','Friendly competition and weekly resets drive engagement across the whole fleet.'],
+];
+
+function Onboarding({onDone,onTour}){
+  const [step,setStep]=useState(0);
+  useEffect(()=>{ if(step===1){const t=setTimeout(()=>setStep(2),1600); return ()=>clearTimeout(t);} },[step]);
+  return <div className="overlay"><div className="modal">
+    {step===0&&<>
+      <div className="logo-xl">D</div>
+      <h2>Welcome to DrivEv Nexus</h2>
+      <p>The connected-EV app that turns every electric kilometre into real benefit — and keeps drivers coming back.</p>
+      <div className="feat"><span>🎛️</span><div><b>Live telematics & eco-coaching</b> — see exactly how you drive.</div></div>
+      <div className="feat"><span>🔋</span><div><b>Battery-life protection</b> — guard your range and resale value.</div></div>
+      <div className="feat"><span>⭐</span><div><b>Eco-Credits & real rewards</b> — charging, car washes, coffee and more.</div></div>
+      <button className="btn" onClick={()=>setStep(1)}>Connect my DrivEv</button>
+      <button className="btn ghost" onClick={onDone}>Skip intro</button>
+    </>}
+    {step===1&&<>
+      <div className="spin-xl"/>
+      <h2>Connecting to your DrivEv…</h2>
+      <p>Securely pairing telematics, battery and charging data.</p>
+    </>}
+    {step===2&&<>
+      <div style={{fontSize:54}}>✅</div>
+      <h2>Connected: DrivEv Aero&nbsp;S</h2>
+      <p>Trip history synced. Your impact, battery health and Eco-Credits are ready to explore.</p>
+      <button className="btn" onClick={onTour}>Take the 60-second tour</button>
+      <button className="btn ghost" onClick={onDone}>Explore on my own</button>
+    </>}
+  </div></div>;
+}
+
+function Tour({step,setView,next,prev,done}){
+  const [v,title,body]=TOUR[step];
+  useEffect(()=>{setView(v);},[step]);
+  const last=step===TOUR.length-1;
+  return <div className="tourcard">
+    <div className="small muted b" style={{color:'var(--accent)'}}>GUIDED TOUR · {step+1} of {TOUR.length}</div>
+    <h3>{title}</h3>
+    <p>{body}</p>
+    <div className="row between">
+      <button className="btn ghost small" onClick={done}>Skip tour</button>
+      <div className="row" style={{gap:8}}>
+        {step>0&&<button className="btn ghost small" onClick={prev}>Back</button>}
+        <button className="btn small" onClick={last?done:next}>{last?'Finish ✓':'Next →'}</button>
+      </div>
+    </div>
+  </div>;
+}
+
 function App(){
   const [view,setView]=useState('dash');
   const [me,setMe]=useState(null);
+  const [userId,setUserId]=useState('u_you');
+  const [personas,setPersonas]=useState([]);
   const [toastMsg,setToastMsg]=useState(null);
+  const [onboard,setOnboard]=useState(()=>{try{return !localStorage.getItem('drivev_onboarded');}catch(e){return true;}});
+  const [tourStep,setTourStep]=useState(-1);
   const tRef=useRef();
-  const load=()=>api('/api/me').then(setMe).catch(e=>setToastMsg('Load error: '+e.message));
-  useEffect(()=>{load();},[]);
+  const load=(uid)=>api('/api/me?userId='+(uid||userId)).then(setMe).catch(e=>setToastMsg('Load error: '+e.message));
+  useEffect(()=>{load(userId);},[userId]);
+  useEffect(()=>{api('/api/personas').then(setPersonas).catch(()=>{});},[]);
   const toast=(m)=>{setToastMsg(m);clearTimeout(tRef.current);tRef.current=setTimeout(()=>setToastMsg(null),4200);};
+  const finishOnboard=()=>{try{localStorage.setItem('drivev_onboarded','1');}catch(e){} setOnboard(false);};
   if(!me) return <div className="loading"><div className="spin"/>Loading DrivEv Nexus…</div>;
   const [title,sub]=TITLES[view];
   return <div className="app">
@@ -399,26 +463,31 @@ function App(){
       <div className="side-foot">
         <div className="b" style={{color:'var(--txt)'}}>{me.primaryVehicle?me.primaryVehicle.make+' '+me.primaryVehicle.model:''}</div>
         <div>{me.primaryVehicle?fmt(me.primaryVehicle.odometerKm)+' km · '+me.primaryVehicle.batteryCapacityKwh+' kWh':''}</div>
-        <div style={{marginTop:8}}>Telematics + battery + rewards in one loop.</div>
+        <button className="btn ghost small" style={{marginTop:12,width:'100%'}} onClick={()=>{setView('dash');setTourStep(0);}}>↻ Replay tour</button>
       </div>
     </aside>
     <main className="main">
       <div className="topbar">
         <div className="pagetitle"><h1>{title}</h1><p>{sub}</p></div>
         <div className="chips">
+          <select className="select" value={userId} onChange={e=>setUserId(e.target.value)} title="Switch demo persona">
+            {personas.map(p=><option key={p.id} value={p.id}>{p.isPrimary?'★ ':''}{p.name} — {p.persona}</option>)}
+          </select>
           <div className="chip"><span className="emoji-ic">🔥</span><div><b>{me.loyalty.streak}</b> <span className="sub">day streak</span></div></div>
           <div className="chip"><span className="emoji-ic">⭐</span><div><b>{fmt(me.loyalty.balance)}</b> <span className="sub">credits</span></div></div>
           <div className="tierbadge" style={{background:me.loyalty.tier.color}}>{me.loyalty.tier.name}</div>
         </div>
       </div>
       {view==='dash'&&<Dashboard me={me} go={setView}/>}
-      {view==='lab'&&<Lab me={me} onLogged={setMe} toast={toast}/>}
+      {view==='lab'&&<Lab me={me} userId={userId} onLogged={setMe} toast={toast}/>}
       {view==='battery'&&<BatteryView me={me}/>}
       {view==='impact'&&<Impact me={me}/>}
-      {view==='rewards'&&<Rewards me={me} reload={load} toast={toast}/>}
-      {view==='challenges'&&<Challenges me={me}/>}
-      {view==='board'&&<Leaderboard me={me}/>}
+      {view==='rewards'&&<Rewards me={me} userId={userId} reload={()=>load(userId)} toast={toast}/>}
+      {view==='challenges'&&<Challenges me={me} userId={userId}/>}
+      {view==='board'&&<Leaderboard me={me} userId={userId}/>}
     </main>
+    {onboard&&<Onboarding onDone={finishOnboard} onTour={()=>{finishOnboard();setView('dash');setTourStep(0);}}/>}
+    {tourStep>=0&&<Tour step={tourStep} setView={setView} next={()=>setTourStep(s=>s+1)} prev={()=>setTourStep(s=>s-1)} done={()=>setTourStep(-1)}/>}
     {toastMsg&&<div className="toast"><div className="b" style={{marginBottom:2}}>DrivEv Nexus</div><div className="small">{toastMsg}</div></div>}
   </div>;
 }

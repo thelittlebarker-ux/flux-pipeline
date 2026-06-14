@@ -246,6 +246,25 @@ app.post('/api/reset', (req, res) => {
   res.json({ ok: true });
 });
 
+// Selectable demo personas — each driver tells a different product story.
+app.get('/api/personas', (req, res) => {
+  const db = store.read();
+  res.json(
+    db.users.map((u) => {
+      const lp = tripsForUser(db, u.id).reduce((s, t) => s + (t.pointsEarned || 0), 0);
+      const veh = db.vehicles.find((v) => v.userId === u.id);
+      return {
+        id: u.id,
+        name: u.name,
+        persona: u.persona || '',
+        isPrimary: !!u.isPrimary,
+        tier: rewards.tierFor(lp).name,
+        vehicle: veh ? `${veh.make} ${veh.model}` : '',
+      };
+    })
+  );
+});
+
 app.get('/api/health', (req, res) => res.json({ ok: true, service: 'drivev', ts: new Date().toISOString() }));
 
 // SPA fallback.
