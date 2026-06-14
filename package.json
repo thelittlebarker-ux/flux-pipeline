@@ -1,7 +1,7 @@
 {
-  "name": "flux-pipeline-cloud",
+  "name": "drivev-nexus",
   "version": "1.0.0",
-  "description": "FLUX Sales Pipeline - Cloud Team Dashboard",
+  "description": "DrivEv Nexus — EV telematics, battery-life and CO2-savings platform with loyalty & rewards",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

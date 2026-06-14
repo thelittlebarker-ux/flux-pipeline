@@ -1,61 +1,89 @@
-# FLUX Sales Pipeline — Cloud Team Dashboard
+# DrivEv Nexus — Telematics · Battery Life · CO₂ Savings · Rewards
 
-A cloud-hosted sales pipeline tracker for your team. Anyone with the URL sees the same data.
+A connected-EV engagement platform that turns raw telematics into **real-world
+benefit and stickiness** for DrivEv drivers. It couples a realistic telematics
+feed with live financial, environmental and battery-health models, then wraps the
+whole thing in a loyalty + rewards loop so opening the app every day pays off.
 
-## Deploy in 10 Minutes (Free)
+> Rebuilt on the lightweight "no database needed" architecture of the original
+> project: an Express API with file-backed JSON storage and a single-file
+> dashboard, so it still deploys for free on Render / Railway.
 
-### Option 1: Render.com (Recommended — Free)
+## Why it drives stickiness
 
-1. **Create a GitHub account** (if you don't have one): https://github.com/signup
-2. **Create a new repository**: Click "New" → name it `flux-pipeline` → Upload these files
-3. **Sign up at Render.com**: https://render.com (sign in with GitHub)
-4. **Click "New" → "Web Service"**
-5. **Connect your `flux-pipeline` repo**
-6. Render auto-detects the settings. Just click **"Create Web Service"**
-7. Wait 2-3 minutes for deploy
-8. **Your URL**: `https://flux-pipeline-xxxx.onrender.com`
-9. Share that URL with your team — everyone sees the same dashboard!
+| Pillar | What the driver gets | Why they come back |
+|---|---|---|
+| **Telematics & eco-score** | Every trip graded A+→E on efficiency + smoothness | Gamified self-improvement |
+| **Battery life** | Live State of Health, warranty tracking, personalised pack-care tips | Asset protection — protect resale value |
+| **CO₂ & cost savings** | kg CO₂ avoided, trees-equivalent, litres of fuel + $ saved | Tangible daily payoff |
+| **Loyalty & rewards** | Eco-Credits, tiers (Bronze→Platinum), redeemable perks | Real, spendable value |
+| **Stickiness mechanics** | Streaks, weekly challenges, badges, community leaderboard | Habit formation + competition |
 
-### Option 2: Railway.app
+## The Simulator Lab (the hook)
 
-1. Go to https://railway.app → Sign in with GitHub
-2. Click "New Project" → "Deploy from GitHub repo"
-3. Select your `flux-pipeline` repo
-4. Railway auto-deploys. Get your URL from Settings → Domains.
+The headline view is an **interactive Simulator Lab**. Drag the sliders —
+distance, average speed, driving aggression, **regenerative braking**, and
+**ambient parking temperature** — and watch energy use, CO₂ saved, money saved,
+eco-score and Eco-Credits recompute in real time:
 
-### Option 3: Run Locally
+- **Regen Incentive Loop** — cranking up regen offsets the penalty of aggressive
+  driving, recovering range *and* multiplying credits.
+- **Asset-protection nudges** — push parking temp past 35 °C and a battery-health
+  warning fires, shifting behaviour from passive tracking to active care.
+- **Tangible value mapping** — efficiency is mapped straight to fuel-cost
+  displacement and spendable points.
+
+Hit **“Log this drive”** to persist the exact configured trip; battery cycles,
+points, streaks and the leaderboard all update.
+
+## Architecture
+
+```
+server.js              Express API (telematics, battery, CO2, rewards, leaderboard)
+lib/
+  config.js            All domain tunables (emissions factors, tiers, battery model)
+  store.js             File-backed JSON store (data/drivev.json)
+  simulator.js         Telematics simulator (random + parameter-driven trips)
+  scoring.js           Eco-driving score + coaching feedback
+  battery.js           State of Health, care score, warranty, projections
+  co2.js               CO2 + fuel-cost savings model
+  rewards.js           Points, tiers, streaks, badges, challenges, catalogue
+  seed.js              Demo driver + peer fleet for the leaderboard
+public/index.html      Single-file React dashboard (7 views + Simulator Lab)
+data/drivev.json       Auto-created & auto-seeded on first boot
+```
+
+## API
+
+| Method | Route | Purpose |
+|---|---|---|
+| GET | `/api/me` | Full dashboard profile (impact, battery, loyalty) |
+| GET | `/api/trips` | Trip history with eco feedback |
+| POST | `/api/trips/simulate` | Log a trip — pass `{params:{...}}` from the Lab, or random |
+| GET | `/api/battery/:vehicleId` | Battery deep-dive |
+| GET | `/api/impact` | CO₂ / cost savings summary |
+| GET | `/api/rewards` | Catalogue + balance + redemptions |
+| POST | `/api/rewards/redeem` | Redeem a reward |
+| GET | `/api/challenges` | Active challenges + badges |
+| GET | `/api/leaderboard?metric=` | Ranked fleet (`points`/`co2SavedKg`/`avgEco`/`distanceKm`) |
+| POST | `/api/reset` | Reset & re-seed demo data |
+
+## Run locally
 
 ```bash
 npm install
 npm start
-# Open http://localhost:3000
+# open http://localhost:3000
 ```
 
-## How It Works
+## Deploy (free)
 
-- **Server**: Express.js saves pipeline data as a JSON file
-- **Database**: Simple file-based (no MySQL/Postgres needed)
-- **Frontend**: Full React dashboard with 8 views
-- **Team sync**: Everyone hits the same server = same data
-- **Data persists**: Stored on the server disk, survives restarts
+- **Render**: connect the repo — `render.yaml` is preconfigured with a persistent
+  disk for `data/`. Click *Create Web Service*.
+- **Docker**: `docker build -t drivev . && docker run -p 3000:3000 drivev`
 
-## Usage
+## Configuration
 
-1. Open the URL
-2. Click "Import" → upload your Platform Reservations Excel
-3. Assign agents, update stages, add notes
-4. Share the URL with your team
-5. They see everything in real-time (on page refresh)
+Set per-market factors via env vars (see `lib/config.js`):
 
-## Files
-
-```
-flux-cloud/
-├── server.js           # Express API server (50 lines)
-├── package.json        # Dependencies
-├── render.yaml         # Render.com deploy config
-├── public/
-│   └── index.html      # Full React dashboard (single file)
-└── data/
-    └── pipeline.json   # Auto-created on first save
-```
+- `GRID_CO2_PER_KWH` — local grid carbon intensity (default `0.233`).
