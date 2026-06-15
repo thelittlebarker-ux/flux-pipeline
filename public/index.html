@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>FLUX 2.0 by DrivEv — EV Telematics, Battery & Rewards</title>
+<title>drivEV by Yinson GreenTech — EV Telematics, Battery & Rewards</title>
 <style>
   :root{
-    --bg:#ffffff; --panel:#ffffff; --panel2:#f8fafc; --line:#e2e8f0; --line2:#eef2f6;
-    --txt:#0f1d2e; --muted:#5b6b7d; --dim:#90a0b2;
-    --surface:#eef3f8; --hover:#eef4f9; --ring:#e6ecf3;
-    --accent:#0aa472; --accent2:#108fb0; --warn:#c47a08; --bad:#dc4a5c;
-    --gold:#cf9f2b; --grad:linear-gradient(135deg,#10c98f,#16b3d6);
-    --shadow:0 1px 2px rgba(15,40,70,.05),0 10px 28px rgba(15,40,70,.06);
+    /* INTERIM Yinson GreenTech palette — swap to official drivEV tokens when supplied. */
+    --bg:#ffffff; --panel:#ffffff; --panel2:#f6faf7; --line:#e3eae5; --line2:#eef4f0;
+    --txt:#0e2118; --muted:#5a6b62; --dim:#8ba096;
+    --surface:#eef6f1; --hover:#edf6f0; --ring:#e3efe8;
+    --accent:#00a14b; --accent2:#00bfa6; --warn:#c47a08; --bad:#dc4a5c;
+    --gold:#cf9f2b; --grad:linear-gradient(135deg,#00b255,#00c2a8);
+    --shadow:0 1px 2px rgba(10,40,25,.05),0 10px 28px rgba(10,40,25,.07);
   }
   *{box-sizing:border-box}
   html,body{max-width:100%;overflow-x:hidden}
@@ -23,7 +24,7 @@
   .side{width:240px;flex:0 0 240px;border-right:1px solid var(--line);padding:22px 16px;
     position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px;background:rgba(255,255,255,.72);backdrop-filter:blur(8px)}
   .brand{display:flex;align-items:center;gap:11px;padding:4px 8px 18px}
-  .logo{width:38px;height:38px;border-radius:11px;background:var(--grad);display:grid;place-items:center;font-weight:800;color:#04201a;font-size:19px;box-shadow:0 6px 18px rgba(16,201,143,.35)}
+  .logo{width:38px;height:38px;border-radius:11px;background:var(--grad);display:grid;place-items:center;font-weight:800;color:#04201a;font-size:19px;box-shadow:0 6px 18px rgba(0,178,85,.35)}
   .brand b{font-size:18px;letter-spacing:.4px}
   .brand .ver{color:var(--accent);font-weight:800}
   .brand small{display:block;color:var(--muted);font-size:10px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase}
@@ -32,7 +33,7 @@
   .nav button{display:flex;align-items:center;gap:11px;background:none;border:none;color:var(--muted);
     padding:10px 12px;border-radius:10px;font-size:14px;cursor:pointer;text-align:left;font-weight:600;transition:.15s}
   .nav button:hover{background:var(--hover);color:var(--txt)}
-  .nav button.on{background:rgba(16,201,143,.1);color:var(--accent);box-shadow:inset 0 0 0 1px rgba(16,201,143,.3)}
+  .nav button.on{background:rgba(0,178,85,.1);color:var(--accent);box-shadow:inset 0 0 0 1px rgba(0,178,85,.3)}
   .nav .ic{width:20px;text-align:center;font-size:16px}
   .side-foot{margin-top:auto;font-size:11px;color:var(--dim);padding:10px 8px;line-height:1.6}
   /* Main */
@@ -48,7 +49,7 @@
   .ic{display:block;flex:0 0 auto}
   .accent{color:var(--accent)}
   .cardicon{width:34px;height:34px;border-radius:10px;background:var(--surface);color:var(--accent);display:grid;place-items:center;flex:0 0 auto}
-  .ptbadge{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:8px;background:rgba(10,164,114,.12);
+  .ptbadge{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:8px;background:rgba(0,161,75,.12);
     color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.4px}
   .ptbadge.sm{padding:3px 8px;font-size:10px}
   .tierbadge{padding:8px 14px;border-radius:11px;font-weight:700;font-size:13px;color:#04201a}
@@ -73,11 +74,11 @@
   .between{justify-content:space-between}
   .muted{color:var(--muted)} .small{font-size:12px} .b{font-weight:700}
   .pill{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700}
-  .pill.good{background:rgba(10,164,114,.13);color:var(--accent)}
+  .pill.good{background:rgba(0,161,75,.13);color:var(--accent)}
   .pill.warn{background:rgba(196,122,8,.14);color:var(--warn)}
   .pill.bad{background:rgba(220,74,92,.13);color:var(--bad)}
   .btn{background:var(--grad);color:#04201a;border:none;padding:11px 18px;border-radius:11px;
-    font-weight:700;font-size:14px;cursor:pointer;transition:.15s;box-shadow:0 6px 16px rgba(16,201,143,.28)}
+    font-weight:700;font-size:14px;cursor:pointer;transition:.15s;box-shadow:0 6px 16px rgba(0,178,85,.28)}
   .btn:hover{transform:translateY(-1px);filter:brightness(1.03)}
   .btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
   .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line);box-shadow:none}
@@ -92,13 +93,13 @@
   input[type=range]{-webkit-appearance:none;width:100%;height:6px;border-radius:999px;
     background:var(--surface);outline:none;border:1px solid var(--line)}
   input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;
-    background:var(--grad);cursor:pointer;box-shadow:0 0 0 4px rgba(16,201,143,.18)}
-  input[type=range]::-moz-range-thumb{width:20px;height:20px;border:none;border-radius:50%;background:#10c98f;cursor:pointer}
+    background:var(--grad);cursor:pointer;box-shadow:0 0 0 4px rgba(0,178,85,.18)}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border:none;border-radius:50%;background:#00b255;cursor:pointer}
   /* table */
   table{width:100%;border-collapse:collapse;font-size:13px}
   th{text-align:left;color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;border-bottom:1px solid var(--line)}
   td{padding:11px 10px;border-bottom:1px solid var(--line2)}
-  tr.me{background:rgba(10,164,114,.07)}
+  tr.me{background:rgba(0,161,75,.07)}
   .ranknum{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-weight:800;background:var(--surface)}
   /* trip list */
   .trip{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--line2)}
@@ -106,11 +107,11 @@
   .grade{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-weight:800;font-size:16px;flex:0 0 42px}
   /* reward card */
   .reward{display:flex;flex-direction:column;gap:10px}
-  .rewardic{width:44px;height:44px;border-radius:12px;background:rgba(10,164,114,.1);color:var(--accent);display:grid;place-items:center}
+  .rewardic{width:44px;height:44px;border-radius:12px;background:rgba(0,161,75,.1);color:var(--accent);display:grid;place-items:center}
   .badge{display:flex;flex-direction:column;align-items:center;gap:7px;padding:16px 10px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);text-align:center;transition:.2s}
-  .badge.earned{border-color:rgba(10,164,114,.4);background:rgba(10,164,114,.07)}
+  .badge.earned{border-color:rgba(0,161,75,.4);background:rgba(0,161,75,.07)}
   .badge .bic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--surface);color:var(--dim)}
-  .badge.earned .bic{background:rgba(10,164,114,.12);color:var(--accent)}
+  .badge.earned .bic{background:rgba(0,161,75,.12);color:var(--accent)}
   .badge .bn{font-size:12px;font-weight:700}
   .badge .bd{font-size:10px;color:var(--muted);line-height:1.4}
   .toast{position:fixed;bottom:24px;right:24px;background:var(--panel);border:1px solid var(--accent);
@@ -118,7 +119,7 @@
   @keyframes pop{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
   .warnbox{display:flex;gap:12px;align-items:flex-start;background:rgba(196,122,8,.09);border:1px solid rgba(196,122,8,.3);
     padding:13px 15px;border-radius:12px;font-size:13px;line-height:1.5}
-  .okbox{background:rgba(10,164,114,.08);border:1px solid rgba(10,164,114,.28);padding:13px 15px;border-radius:12px;font-size:13px;display:flex;gap:12px;align-items:flex-start}
+  .okbox{background:rgba(0,161,75,.08);border:1px solid rgba(0,161,75,.28);padding:13px 15px;border-radius:12px;font-size:13px;display:flex;gap:12px;align-items:flex-start}
   .seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px}
   .seg button{background:none;border:none;color:var(--muted);padding:7px 13px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer}
   .seg button.on{background:var(--panel);color:var(--accent);box-shadow:var(--shadow)}
@@ -138,12 +139,12 @@
   .modal p{color:var(--muted);font-size:14px;line-height:1.6;margin:0 0 18px}
   .modal .btn{width:100%;margin-top:8px}
   .logo-xl{width:74px;height:74px;border-radius:21px;background:var(--grad);display:flex;align-items:center;
-    justify-content:center;font-weight:800;color:#04201a;font-size:38px;margin:0 auto;box-shadow:0 10px 26px rgba(16,201,143,.4)}
+    justify-content:center;font-weight:800;color:#04201a;font-size:38px;margin:0 auto;box-shadow:0 10px 26px rgba(0,178,85,.4)}
   .spin-xl{display:inline-block;width:48px;height:48px;border:4px solid rgba(15,40,70,.12);
     border-top-color:var(--accent);border-radius:50%;animation:sp 1s linear infinite;margin:6px auto 4px}
   .feat{display:flex;gap:11px;align-items:center;text-align:left;font-size:13px;line-height:1.45;margin-bottom:11px}
-  .featic{width:34px;height:34px;border-radius:10px;background:rgba(10,164,114,.1);color:var(--accent);display:grid;place-items:center;flex:0 0 auto}
-  .connected{width:64px;height:64px;border-radius:50%;background:rgba(10,164,114,.12);color:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto}
+  .featic{width:34px;height:34px;border-radius:10px;background:rgba(0,161,75,.1);color:var(--accent);display:grid;place-items:center;flex:0 0 auto}
+  .connected{width:64px;height:64px;border-radius:50%;background:rgba(0,161,75,.12);color:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto}
   .warnbox .ic{color:var(--warn)} .okbox .ic{color:var(--accent)} .warnbox,.okbox{align-items:center}
   /* guided tour */
   .tourcard{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:#fff;
@@ -182,7 +183,7 @@
 </style>
 </head>
 <body>
-<div id="root"><div class="loading"><div class="spin"></div>Loading FLUX 2.0…</div></div>
+<div id="root"><div class="loading"><div class="spin"></div>Loading drivEV…</div></div>
 
 <!-- Vendored locally: no CDN / build-step needed at runtime. app.js is compiled from app.jsx via build.js -->
 <script src="vendor/react.min.js"></script>

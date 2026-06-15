@@ -274,5 +274,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`DrivEv platform running on http://localhost:${PORT}`);
+  console.log(`drivEV platform running on http://localhost:${PORT}`);
 });

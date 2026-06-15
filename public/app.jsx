@@ -36,7 +36,7 @@ function computeTrip(p, pt='BEV'){
   return {consumption,energyUsedKwh,co2SavedKg,fuelSaved,ecoScore,pointsEarned:pts,harshB,harshA,chargeBonus,plugIn:P.plugIn};
 }
 function gradeOf(s){return s>=90?'A+':s>=80?'A':s>=70?'B':s>=60?'C':s>=50?'D':'E';}
-function gradeColor(s){return s>=80?'#0aa472':s>=60?'#108fb0':s>=50?'#c47a08':'#dc4a5c';}
+function gradeColor(s){return s>=80?'#00a14b':s>=60?'#00bfa6':s>=50?'#c47a08':'#dc4a5c';}
 
 /* ---------- icon system (line icons, no emoji) ---------- */
 function Icon({name,size=20,className,stroke=1.8}){
@@ -82,11 +82,11 @@ function Pt({code,small}){
 /* ---------- tiny SVG chart primitives ---------- */
 function Gauge({value,max=100,size=140,label,color}){
   const r=size/2-12, c=2*Math.PI*r, pct=Math.min(1,value/max);
-  color=color||'#0aa472';
+  color=color||'#00a14b';
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stopColor="#0aa472"/><stop offset="100%" stopColor="#108fb0"/></linearGradient></defs>
+        <stop offset="0%" stopColor="#00a14b"/><stop offset="100%" stopColor="#00bfa6"/></linearGradient></defs>
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#e6ecf3" strokeWidth="11"/>
       <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color==='grad'?'url(#gg)':color} strokeWidth="11"
         strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c*(1-pct)}
@@ -96,7 +96,7 @@ function Gauge({value,max=100,size=140,label,color}){
     </svg>
   );
 }
-function AreaChart({data,height=120,color='#0aa472'}){
+function AreaChart({data,height=120,color='#00a14b'}){
   const w=560; const max=Math.max(...data,1); const min=0;
   if(!data.length) return <div className="muted small">No data</div>;
   const step=w/(data.length-1||1);
@@ -112,7 +112,7 @@ function AreaChart({data,height=120,color='#0aa472'}){
     </svg>
   );
 }
-function Bars({data,height=120,color='#108fb0'}){
+function Bars({data,height=120,color='#00bfa6'}){
   const max=Math.max(...data.map(d=>d.v),1); const bw=100/data.length;
   return (
     <svg viewBox="0 0 100 100" width="100%" height={height} preserveAspectRatio="none">
@@ -283,7 +283,7 @@ function BatteryView({me}){
     </div>
     <div className="card" style={{display:'flex',flexDirection:'column',alignItems:'center'}}>
       <h3 style={{alignSelf:'flex-start'}}>Battery Care Score</h3>
-      <Gauge value={b.careScore} color={b.careScore>=80?'#0aa472':b.careScore>=60?'#c47a08':'#dc4a5c'} label="care"/>
+      <Gauge value={b.careScore} color={b.careScore>=80?'#00a14b':b.careScore>=60?'#c47a08':'#dc4a5c'} label="care"/>
       <div className="pill good" style={{marginTop:6}}>{b.careScore>=80?'Excellent habits':b.careScore>=60?'Room to improve':'At-risk habits'}</div>
     </div>
     <div className="card"><h3>Warranty &amp; Projection</h3>
@@ -435,7 +435,7 @@ const TITLES={dash:['Dashboard','Your live telematics, impact and loyalty snapsh
   impact:['Climate Impact','Every electrified kilometre, translated into real-world savings'],
   rewards:['Rewards','Turn your Eco-Credits into charging, service and impact perks'],
   challenges:['Challenges & Badges','Weekly goals and milestones that keep driving rewarding'],
-  board:['Leaderboard','See how you stack up against the DrivEv community']};
+  board:['Leaderboard','See how you stack up against the drivEV community']};
 
 const TOUR=[
   ['dash','Your impact at a glance','CO₂ avoided, Eco-Credits, driving grade and battery health — all live and personalised to the driver.'],
@@ -450,7 +450,7 @@ const TOUR=[
 function Brand({small}){
   return <div className="brand">
     <div className="logo"><Icon name="bolt" size={small?18:21} stroke={2.2}/></div>
-    <div><b>FLUX <span className="ver">2.0</span></b><small>by DrivEv</small></div>
+    <div><b>driv<span className="ver">EV</span></b><small>by Yinson GreenTech</small></div>
   </div>;
 }
 
@@ -460,8 +460,8 @@ function Onboarding({onDone,onTour,vehicleName}){
   return <div className="overlay"><div className="modal">
     {step===0&&<>
       <div className="logo-xl"><Icon name="bolt" size={38} stroke={2.2}/></div>
-      <h2>Welcome to FLUX 2.0</h2>
-      <p>DrivEv’s connected-EV platform — turning every electrified kilometre into real benefit, and keeping drivers coming back.</p>
+      <h2>Welcome to drivEV</h2>
+      <p>drivEV’s connected-EV platform — turning every electrified kilometre into real benefit, and keeping drivers coming back.</p>
       <div className="feat"><span className="featic"><Icon name="sliders" size={18}/></span><div><b>Live telematics &amp; eco-coaching</b> — see exactly how you drive.</div></div>
       <div className="feat"><span className="featic"><Icon name="battery" size={18}/></span><div><b>Battery-life protection</b> — guard your range and resale value.</div></div>
       <div className="feat"><span className="featic"><Icon name="star" size={18}/></span><div><b>Eco-Credits &amp; real rewards</b> — charging, car washes, coffee and more.</div></div>
@@ -475,7 +475,7 @@ function Onboarding({onDone,onTour,vehicleName}){
     </>}
     {step===2&&<>
       <div className="connected"><Icon name="check" size={34} stroke={2.4}/></div>
-      <h2>Connected: {vehicleName||'your DrivEv'}</h2>
+      <h2>Connected: {vehicleName||'your drivEV'}</h2>
       <p>Trip history synced. Your impact, battery health and Eco-Credits are ready to explore.</p>
       <button className="btn" onClick={onTour}>Take the 60-second tour</button>
       <button className="btn ghost" onClick={onDone}>Explore on my own</button>
@@ -507,15 +507,15 @@ function App(){
   const [userId,setUserId]=useState('u_you');
   const [personas,setPersonas]=useState([]);
   const [toastMsg,setToastMsg]=useState(null);
-  const [onboard,setOnboard]=useState(()=>{try{return !localStorage.getItem('flux2_onboarded');}catch(e){return true;}});
+  const [onboard,setOnboard]=useState(()=>{try{return !localStorage.getItem('drivev_onboarded');}catch(e){return true;}});
   const [tourStep,setTourStep]=useState(-1);
   const tRef=useRef();
   const load=(uid)=>api('/api/me?userId='+(uid||userId)).then(setMe).catch(e=>setToastMsg('Load error: '+e.message));
   useEffect(()=>{load(userId);},[userId]);
   useEffect(()=>{api('/api/personas').then(setPersonas).catch(()=>{});},[]);
   const toast=(m)=>{setToastMsg(m);clearTimeout(tRef.current);tRef.current=setTimeout(()=>setToastMsg(null),4200);};
-  const finishOnboard=()=>{try{localStorage.setItem('flux2_onboarded','1');}catch(e){} setOnboard(false);};
-  if(!me) return <div className="loading"><div className="spin"/>Loading FLUX 2.0…</div>;
+  const finishOnboard=()=>{try{localStorage.setItem('drivev_onboarded','1');}catch(e){} setOnboard(false);};
+  if(!me) return <div className="loading"><div className="spin"/>Loading drivEV…</div>;
   const [title,sub]=TITLES[view];
   const pv=me.primaryVehicle||{};
   return <div className="app">
@@ -554,7 +554,7 @@ function App(){
       <button key={k} className={view===k?'on':''} onClick={()=>setView(k)}><Icon name={ic} size={20}/><span>{label.split(' ')[0]}</span></button>)}</nav>
     {onboard&&<Onboarding onDone={finishOnboard} vehicleName={pv.make+' '+pv.model} onTour={()=>{finishOnboard();setView('dash');setTourStep(0);}}/>}
     {tourStep>=0&&<Tour step={tourStep} setView={setView} next={()=>setTourStep(s=>s+1)} prev={()=>setTourStep(s=>s-1)} done={()=>setTourStep(-1)}/>}
-    {toastMsg&&<div className="toast"><div className="b" style={{marginBottom:2}}>FLUX 2.0</div><div className="small">{toastMsg}</div></div>}
+    {toastMsg&&<div className="toast"><div className="b" style={{marginBottom:2}}>drivEV</div><div className="small">{toastMsg}</div></div>}
   </div>;
 }
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);

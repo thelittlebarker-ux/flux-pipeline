@@ -1,12 +1,14 @@
-# FLUX 2.0 by DrivEv — EV Telematics · Battery Life · CO₂ Savings · Rewards
+# drivEV by Yinson GreenTech — EV Telematics · Battery Life · CO₂ Savings · Rewards
 
-DrivEv's connected-EV engagement platform that turns raw telematics into **real-world
-benefit and stickiness**. EV-only — **BEV, PHEV and HEV** — it couples a realistic
-telematics feed with live financial, environmental and battery-health models, then
-wraps the whole thing in a loyalty + rewards loop so opening the app every day pays off.
+The drivEV connected-EV **engagement platform** — for retail lease drivers and fleet
+operators — that turns raw telematics into **real-world benefit and stickiness**.
+EV-only (**BEV, PHEV, HEV**), it couples a realistic telematics feed with live
+financial, environmental and battery-health models, wrapped in an Eco-Credits loyalty
+loop redeemable across the Yinson GreenTech ecosystem (notably **chargEV**).
 
-Brand & UI guidelines live in [`BRAND.md`](BRAND.md). The product proposal (with
-wireframes and screenshots) is `FLUX-2.0-Proposal.pdf`.
+Brand & UI notes live in [`BRAND.md`](BRAND.md) (interim Yinson-green palette pending
+the official drivEV guideline). The product proposal — with wireframes and
+screenshots — is `drivEV-Product-Proposal.pdf`.
 
 > Rebuilt on the lightweight "no database needed" architecture of the original
 > project: an Express API with file-backed JSON storage and a single-file

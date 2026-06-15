@@ -1,7 +1,7 @@
 {
-  "name": "flux-2-drivev",
+  "name": "drivev-app",
   "version": "2.0.0",
-  "description": "FLUX 2.0 by DrivEv — EV-only (BEV/PHEV/HEV) telematics, battery-life, CO2-savings and rewards platform",
+  "description": "drivEV by Yinson GreenTech — EV-only (BEV/PHEV/HEV) telematics, battery-life, CO2-savings and rewards engagement platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -94,7 +94,7 @@ function gradeOf(s) {
   return s >= 90 ? 'A+' : s >= 80 ? 'A' : s >= 70 ? 'B' : s >= 60 ? 'C' : s >= 50 ? 'D' : 'E';
 }
 function gradeColor(s) {
-  return s >= 80 ? '#0aa472' : s >= 60 ? '#108fb0' : s >= 50 ? '#c47a08' : '#dc4a5c';
+  return s >= 80 ? '#00a14b' : s >= 60 ? '#00bfa6' : s >= 50 ? '#c47a08' : '#dc4a5c';
 }
 
 /* ---------- icon system (line icons, no emoji) ---------- */
@@ -422,7 +422,7 @@ function Gauge({
   const r = size / 2 - 12,
     c = 2 * Math.PI * r,
     pct = Math.min(1, value / max);
-  color = color || '#0aa472';
+  color = color || '#00a14b';
   return /*#__PURE__*/React.createElement("svg", {
     width: size,
     height: size,
@@ -435,10 +435,10 @@ function Gauge({
     y2: "1"
   }, /*#__PURE__*/React.createElement("stop", {
     offset: "0%",
-    stopColor: "#0aa472"
+    stopColor: "#00a14b"
   }), /*#__PURE__*/React.createElement("stop", {
     offset: "100%",
-    stopColor: "#108fb0"
+    stopColor: "#00bfa6"
   }))), /*#__PURE__*/React.createElement("circle", {
     cx: size / 2,
     cy: size / 2,
@@ -478,7 +478,7 @@ function Gauge({
 function AreaChart({
   data,
   height = 120,
-  color = '#0aa472'
+  color = '#00a14b'
 }) {
   const w = 560;
   const max = Math.max(...data, 1);
@@ -522,7 +522,7 @@ function AreaChart({
 function Bars({
   data,
   height = 120,
-  color = '#108fb0'
+  color = '#00bfa6'
 }) {
   const max = Math.max(...data.map(d => d.v), 1);
   const bw = 100 / data.length;
@@ -1153,7 +1153,7 @@ function BatteryView({
     }
   }, "Battery Care Score"), /*#__PURE__*/React.createElement(Gauge, {
     value: b.careScore,
-    color: b.careScore >= 80 ? '#0aa472' : b.careScore >= 60 ? '#c47a08' : '#dc4a5c',
+    color: b.careScore >= 80 ? '#00a14b' : b.careScore >= 60 ? '#c47a08' : '#dc4a5c',
     label: "care"
   }), /*#__PURE__*/React.createElement("div", {
     className: "pill good",
@@ -1586,7 +1586,7 @@ const TITLES = {
   impact: ['Climate Impact', 'Every electrified kilometre, translated into real-world savings'],
   rewards: ['Rewards', 'Turn your Eco-Credits into charging, service and impact perks'],
   challenges: ['Challenges & Badges', 'Weekly goals and milestones that keep driving rewarding'],
-  board: ['Leaderboard', 'See how you stack up against the DrivEv community']
+  board: ['Leaderboard', 'See how you stack up against the drivEV community']
 };
 const TOUR = [['dash', 'Your impact at a glance', 'CO₂ avoided, Eco-Credits, driving grade and battery health — all live and personalised to the driver.'], ['lab', 'The Simulator Lab', 'Drag the sliders and watch energy, money, battery stress and credits respond instantly. This real-time loop is the daily hook.'], ['battery', 'Protect the battery', 'State of Health, warranty tracking and tailored charging advice turn passive data into active asset protection.'], ['impact', 'Real-world savings', 'Every electrified kilometre becomes CO₂, fuel and money saved — the tangible payoff that keeps the app open.'], ['rewards', 'Spend Eco-Credits', 'Redeem real partner perks: charging sessions, car washes, coffee, service credit and more.'], ['challenges', 'Build the habit', 'Weekly challenges, streaks and badges turn one-off tracking into a daily routine.'], ['board', 'Community leaderboard', 'Friendly competition and weekly resets drive engagement across the whole fleet.']];
 function Brand({
@@ -1600,9 +1600,9 @@ function Brand({
     name: "bolt",
     size: small ? 18 : 21,
     stroke: 2.2
-  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "FLUX ", /*#__PURE__*/React.createElement("span", {
+  })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("b", null, "driv", /*#__PURE__*/React.createElement("span", {
     className: "ver"
-  }, "2.0")), /*#__PURE__*/React.createElement("small", null, "by DrivEv")));
+  }, "EV")), /*#__PURE__*/React.createElement("small", null, "by Yinson GreenTech")));
 }
 function Onboarding({
   onDone,
@@ -1626,7 +1626,7 @@ function Onboarding({
     name: "bolt",
     size: 38,
     stroke: 2.2
-  })), /*#__PURE__*/React.createElement("h2", null, "Welcome to FLUX 2.0"), /*#__PURE__*/React.createElement("p", null, "DrivEv\u2019s connected-EV platform \u2014 turning every electrified kilometre into real benefit, and keeping drivers coming back."), /*#__PURE__*/React.createElement("div", {
+  })), /*#__PURE__*/React.createElement("h2", null, "Welcome to drivEV"), /*#__PURE__*/React.createElement("p", null, "drivEV\u2019s connected-EV platform \u2014 turning every electrified kilometre into real benefit, and keeping drivers coming back."), /*#__PURE__*/React.createElement("div", {
     className: "feat"
   }, /*#__PURE__*/React.createElement("span", {
     className: "featic"
@@ -1661,7 +1661,7 @@ function Onboarding({
     name: "check",
     size: 34,
     stroke: 2.4
-  })), /*#__PURE__*/React.createElement("h2", null, "Connected: ", vehicleName || 'your DrivEv'), /*#__PURE__*/React.createElement("p", null, "Trip history synced. Your impact, battery health and Eco-Credits are ready to explore."), /*#__PURE__*/React.createElement("button", {
+  })), /*#__PURE__*/React.createElement("h2", null, "Connected: ", vehicleName || 'your drivEV'), /*#__PURE__*/React.createElement("p", null, "Trip history synced. Your impact, battery health and Eco-Credits are ready to explore."), /*#__PURE__*/React.createElement("button", {
     className: "btn",
     onClick: onTour
   }, "Take the 60-second tour"), /*#__PURE__*/React.createElement("button", {
@@ -1715,7 +1715,7 @@ function App() {
   const [toastMsg, setToastMsg] = useState(null);
   const [onboard, setOnboard] = useState(() => {
     try {
-      return !localStorage.getItem('flux2_onboarded');
+      return !localStorage.getItem('drivev_onboarded');
     } catch (e) {
       return true;
     }
@@ -1736,7 +1736,7 @@ function App() {
   };
   const finishOnboard = () => {
     try {
-      localStorage.setItem('flux2_onboarded', '1');
+      localStorage.setItem('drivev_onboarded', '1');
     } catch (e) {}
     setOnboard(false);
   };
@@ -1744,7 +1744,7 @@ function App() {
     className: "loading"
   }, /*#__PURE__*/React.createElement("div", {
     className: "spin"
-  }), "Loading FLUX 2.0\u2026");
+  }), "Loading drivEV\u2026");
   const [title, sub] = TITLES[view];
   const pv = me.primaryVehicle || {};
   return /*#__PURE__*/React.createElement("div", {
@@ -1885,7 +1885,7 @@ function App() {
     style: {
       marginBottom: 2
     }
-  }, "FLUX 2.0"), /*#__PURE__*/React.createElement("div", {
+  }, "drivEV"), /*#__PURE__*/React.createElement("div", {
     className: "small"
   }, toastMsg)));
 }
