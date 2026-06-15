@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DrivEv Nexus — Telematics, Battery & Rewards</title>
+<title>FLUX 2.0 by DrivEv — EV Telematics, Battery & Rewards</title>
 <style>
   :root{
     --bg:#ffffff; --panel:#ffffff; --panel2:#f8fafc; --line:#e2e8f0; --line2:#eef2f6;
@@ -14,6 +14,7 @@
     --shadow:0 1px 2px rgba(15,40,70,.05),0 10px 28px rgba(15,40,70,.06);
   }
   *{box-sizing:border-box}
+  html,body{max-width:100%;overflow-x:hidden}
   body{margin:0;background:#ffffff;
     color:var(--txt);font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-font-smoothing:antialiased}
   a{color:inherit}
@@ -23,8 +24,10 @@
     position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px;background:rgba(255,255,255,.72);backdrop-filter:blur(8px)}
   .brand{display:flex;align-items:center;gap:11px;padding:4px 8px 18px}
   .logo{width:38px;height:38px;border-radius:11px;background:var(--grad);display:grid;place-items:center;font-weight:800;color:#04201a;font-size:19px;box-shadow:0 6px 18px rgba(16,201,143,.35)}
-  .brand b{font-size:18px;letter-spacing:.3px}
-  .brand small{display:block;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase}
+  .brand b{font-size:18px;letter-spacing:.4px}
+  .brand .ver{color:var(--accent);font-weight:800}
+  .brand small{display:block;color:var(--muted);font-size:10px;font-weight:600;letter-spacing:1.4px;text-transform:uppercase}
+  .logo svg{color:#04201a}
   .nav{display:flex;flex-direction:column;gap:3px;margin-top:6px}
   .nav button{display:flex;align-items:center;gap:11px;background:none;border:none;color:var(--muted);
     padding:10px 12px;border-radius:10px;font-size:14px;cursor:pointer;text-align:left;font-weight:600;transition:.15s}
@@ -42,6 +45,12 @@
     padding:8px 13px;border-radius:11px;font-size:13px;box-shadow:var(--shadow)}
   .chip b{font-size:14px}
   .chip .sub{color:var(--muted);font-size:11px}
+  .ic{display:block;flex:0 0 auto}
+  .accent{color:var(--accent)}
+  .cardicon{width:34px;height:34px;border-radius:10px;background:var(--surface);color:var(--accent);display:grid;place-items:center;flex:0 0 auto}
+  .ptbadge{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:8px;background:rgba(10,164,114,.12);
+    color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.4px}
+  .ptbadge.sm{padding:3px 8px;font-size:10px}
   .tierbadge{padding:8px 14px;border-radius:11px;font-weight:700;font-size:13px;color:#04201a}
   /* Cards / grid */
   .grid{display:grid;gap:16px}
@@ -97,11 +106,11 @@
   .grade{width:42px;height:42px;border-radius:11px;display:grid;place-items:center;font-weight:800;font-size:16px;flex:0 0 42px}
   /* reward card */
   .reward{display:flex;flex-direction:column;gap:10px}
-  .reward .ic{font-size:30px}
+  .rewardic{width:44px;height:44px;border-radius:12px;background:rgba(10,164,114,.1);color:var(--accent);display:grid;place-items:center}
   .badge{display:flex;flex-direction:column;align-items:center;gap:7px;padding:16px 10px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);text-align:center;transition:.2s}
   .badge.earned{border-color:rgba(10,164,114,.4);background:rgba(10,164,114,.07)}
-  .badge .bic{font-size:30px;filter:grayscale(1);opacity:.35}
-  .badge.earned .bic{filter:none;opacity:1}
+  .badge .bic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:var(--surface);color:var(--dim)}
+  .badge.earned .bic{background:rgba(10,164,114,.12);color:var(--accent)}
   .badge .bn{font-size:12px;font-weight:700}
   .badge .bd{font-size:10px;color:var(--muted);line-height:1.4}
   .toast{position:fixed;bottom:24px;right:24px;background:var(--panel);border:1px solid var(--accent);
@@ -122,8 +131,8 @@
     font-size:13px;color:var(--txt);font-weight:600;cursor:pointer;font-family:inherit;max-width:280px;box-shadow:var(--shadow)}
   /* onboarding modal */
   .overlay{position:fixed;inset:0;background:rgba(15,29,46,.45);backdrop-filter:blur(4px);
-    display:grid;place-items:center;z-index:100;padding:20px}
-  .modal{background:#fff;border:1px solid var(--line);border-radius:20px;padding:32px;max-width:440px;width:100%;
+    display:flex;align-items:center;justify-content:center;z-index:100;padding:18px;overflow:auto}
+  .modal{background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px;max-width:420px;width:100%;
     text-align:center;box-shadow:0 30px 80px rgba(15,40,70,.28);animation:pop .3s}
   .modal h2{margin:14px 0 8px;font-size:22px}
   .modal p{color:var(--muted);font-size:14px;line-height:1.6;margin:0 0 18px}
@@ -132,8 +141,10 @@
     justify-content:center;font-weight:800;color:#04201a;font-size:38px;margin:0 auto;box-shadow:0 10px 26px rgba(16,201,143,.4)}
   .spin-xl{display:inline-block;width:48px;height:48px;border:4px solid rgba(15,40,70,.12);
     border-top-color:var(--accent);border-radius:50%;animation:sp 1s linear infinite;margin:6px auto 4px}
-  .feat{display:flex;gap:11px;align-items:flex-start;text-align:left;font-size:13px;line-height:1.5;margin-bottom:11px}
-  .feat span{font-size:20px}
+  .feat{display:flex;gap:11px;align-items:center;text-align:left;font-size:13px;line-height:1.45;margin-bottom:11px}
+  .featic{width:34px;height:34px;border-radius:10px;background:rgba(10,164,114,.1);color:var(--accent);display:grid;place-items:center;flex:0 0 auto}
+  .connected{width:64px;height:64px;border-radius:50%;background:rgba(10,164,114,.12);color:var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto}
+  .warnbox .ic{color:var(--warn)} .okbox .ic{color:var(--accent)} .warnbox,.okbox{align-items:center}
   /* guided tour */
   .tourcard{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:#fff;
     border:1px solid var(--accent);border-radius:16px;padding:18px 20px;max-width:460px;width:calc(100% - 40px);
@@ -141,10 +152,37 @@
   .tourcard h3{margin:7px 0 7px;font-size:17px;text-transform:none;letter-spacing:0;color:var(--txt)}
   .tourcard p{color:var(--muted);font-size:13px;line-height:1.6;margin:0 0 14px}
   .btn.small{padding:8px 14px;font-size:13px}
+  .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  /* mobile chrome (hidden on desktop) */
+  .mobilebrand{display:none}
+  .mobilenav{display:none}
+  @media(max-width:1000px){
+    .mobilebrand{display:block;width:100%;margin-bottom:6px}
+    .topbar{gap:12px}
+    .chips{width:100%}
+    .select{flex:1;max-width:none}
+    .main{padding:18px 16px 96px}
+    .mobilenav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:80;background:rgba(255,255,255,.96);
+      backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:7px 4px calc(7px + env(safe-area-inset-bottom));
+      justify-content:space-between;box-shadow:0 -6px 20px rgba(15,40,70,.06)}
+    .mobilenav button{flex:1;background:none;border:none;color:var(--muted);display:flex;flex-direction:column;align-items:center;
+      gap:3px;padding:4px 2px;font-size:9.5px;font-weight:600;cursor:pointer;border-radius:8px}
+    .mobilenav button.on{color:var(--accent)}
+    .stat .val{font-size:26px}
+    .pagetitle h1{font-size:21px}
+  }
+  @media(max-width:560px){
+    .g4{grid-template-columns:1fr 1fr}
+    .card{padding:15px}
+    .chip .sub{display:none}
+    .modal{padding:24px 20px}
+    .modal h2{font-size:20px}
+    .feat{font-size:12.5px}
+  }
 </style>
 </head>
 <body>
-<div id="root"><div class="loading"><div class="spin"></div>Loading DrivEv Nexus…</div></div>
+<div id="root"><div class="loading"><div class="spin"></div>Loading FLUX 2.0…</div></div>
 
 <!-- Vendored locally: no CDN / build-step needed at runtime. app.js is compiled from app.jsx via build.js -->
 <script src="vendor/react.min.js"></script>

@@ -1,7 +1,7 @@
 {
-  "name": "drivev-nexus",
-  "version": "1.0.0",
-  "description": "DrivEv Nexus — EV telematics, battery-life and CO2-savings platform with loyalty & rewards",
+  "name": "flux-2-drivev",
+  "version": "2.0.0",
+  "description": "FLUX 2.0 by DrivEv — EV-only (BEV/PHEV/HEV) telematics, battery-life, CO2-savings and rewards platform",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

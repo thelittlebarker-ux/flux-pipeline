@@ -148,8 +148,8 @@ app.post('/api/trips/simulate', (req, res) => {
     // otherwise fall back to a random realistic trip.
     const p = req.body.params;
     const trip = p
-      ? simulator.tripFromParams(vehicle.id, p)
-      : simulator.generateTrip(vehicle.id, { profile: req.body.profile, skill: req.body.skill });
+      ? simulator.tripFromParams(vehicle.id, { ...p, powertrain: vehicle.powertrain })
+      : simulator.generateTrip(vehicle.id, { profile: req.body.profile, skill: req.body.skill, powertrain: vehicle.powertrain });
     db.trips.push(trip);
     // Reflect usage on the pack: partial cycle + odometer.
     vehicle.battery.cycleCount = (vehicle.battery.cycleCount || 0) + trip.energyUsedKwh / vehicle.batteryCapacityKwh;
@@ -260,6 +260,7 @@ app.get('/api/personas', (req, res) => {
         isPrimary: !!u.isPrimary,
         tier: rewards.tierFor(lp).name,
         vehicle: veh ? `${veh.make} ${veh.model}` : '',
+        powertrain: veh ? veh.powertrain : 'BEV',
       };
     })
   );

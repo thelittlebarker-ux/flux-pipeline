@@ -1,9 +1,12 @@
-# DrivEv Nexus — Telematics · Battery Life · CO₂ Savings · Rewards
+# FLUX 2.0 by DrivEv — EV Telematics · Battery Life · CO₂ Savings · Rewards
 
-A connected-EV engagement platform that turns raw telematics into **real-world
-benefit and stickiness** for DrivEv drivers. It couples a realistic telematics
-feed with live financial, environmental and battery-health models, then wraps the
-whole thing in a loyalty + rewards loop so opening the app every day pays off.
+DrivEv's connected-EV engagement platform that turns raw telematics into **real-world
+benefit and stickiness**. EV-only — **BEV, PHEV and HEV** — it couples a realistic
+telematics feed with live financial, environmental and battery-health models, then
+wraps the whole thing in a loyalty + rewards loop so opening the app every day pays off.
+
+Brand & UI guidelines live in [`BRAND.md`](BRAND.md). The product proposal (with
+wireframes and screenshots) is `FLUX-2.0-Proposal.pdf`.
 
 > Rebuilt on the lightweight "no database needed" architecture of the original
 > project: an Express API with file-backed JSON storage and a single-file
