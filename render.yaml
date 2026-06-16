@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: flux-pipeline
+    name: drivev-nexus
     runtime: node
     buildCommand: npm install
     startCommand: npm start
