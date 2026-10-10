@@ -4,17 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>drivEV Driver</title>
-<meta name="description" content="drivEV driver app prototype for Pos Malaysia EV vans: low-battery alert, ranked charging stops, navigation, charging and a pictorial guide.">
+<meta name="description" content="drivEV driver app prototype for Pos Malaysia vans: one recommended charging stop, maps hand-off, fleet-account charging, bay-taken reroute, leave-at time and help on every screen.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
-/* Layout: a single phone column (390px) centred in a bezel on desktop with a demo panel beside it; full-bleed on phones. */
+/* Layout: one phone column (390px) in a bezel on wide screens with the demo panel beside it; full-bleed on narrow screens with a Demo button. White only. */
 :root{
-  --navy:#17145a; --navy-2:#2a2680; --green:#17a874; --green-2:#0e8c5f; --mint:#dff5ec; --mint-2:#b9ead6;
-  --bg:#ffffff; --screen:#f5f7fb; --card:#ffffff; --ink:#15173a; --ink-2:#4f5478; --ink-3:#8a8fae; --line:#e0e4ee; --line-2:#cfd4e2;
-  --good:#17a874; --warn:#e08a00; --bad:#d93d3d; --warn-bg:#fff4e0; --bad-bg:#fdeaea; --good-bg:#e4f7ef; --info-bg:#e8edff;
-  --bezel:#1b1d2b; --shadow:0 18px 50px rgba(23,20,90,.18);
-  --display:"Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif; --body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --navy:#1b1464; --navy-2:#2a2680; --green:#1db07e; --green-2:#128c62; --mint:#e4f6ee; --mint-2:#bfeadb;
+  --bg:#ffffff; --screen:#f5f7fb; --card:#ffffff; --ink:#15173a; --ink-2:#4f5478; --ink-3:#8a8fae; --line:#e3e6ee; --line-2:#cfd4e2;
+  --good:#1db07e; --warn:#e08a00; --bad:#d93d3d; --warn-bg:#fff4e0; --bad-bg:#fdeaea; --good-bg:#e4f6ee; --info-bg:#e9ebf7;
+  --bezel:#1b1d2b; --shadow:0 18px 50px rgba(27,20,100,.16);
+  --display:"Avenir Next","Avenir","Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif; --body:"Avenir Next","Avenir","IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -22,20 +22,23 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font
 h1,h2,h3,.display{font-family:var(--display);letter-spacing:-.01em}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
 button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--green);outline-offset:2px}
-.stage{min-height:100%;display:flex;align-items:center;justify-content:center;gap:32px;padding:24px 16px;flex-wrap:wrap}
-.bezel{width:390px;max-width:100%;height:820px;max-height:calc(100vh - 48px);background:var(--bezel);border-radius:46px;padding:12px;box-shadow:var(--shadow);position:relative;flex:0 0 auto}
+a{color:var(--green-2)}
+.stage{min-height:100%;display:flex;align-items:center;justify-content:center;gap:28px;padding:20px 16px;flex-wrap:wrap}
+.bezel{width:390px;max-width:100%;height:min(820px,calc(100vh - 40px));min-height:560px;background:var(--bezel);border-radius:46px;padding:12px;box-shadow:var(--shadow);position:relative;flex:0 0 auto}
 .phone{position:relative;width:100%;height:100%;background:var(--screen);border-radius:36px;overflow:hidden;display:flex;flex-direction:column}
 .notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:110px;height:30px;background:var(--bezel);border-radius:20px;z-index:5}
 .statusbar{height:46px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 4px;font-family:var(--display);font-weight:700;font-size:14px;color:#fff;background:var(--navy)}
 .statusbar .right{display:flex;gap:5px;align-items:center}
 .app{flex:1;min-height:0;display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:6px 18px 14px;gap:8px;background:var(--navy);color:#fff;margin-bottom:12px;border-radius:0 0 22px 22px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:6px 16px 14px;gap:8px;background:var(--navy);color:#fff;margin-bottom:12px;border-radius:0 0 22px 22px}
 .brand{font-family:var(--display);font-weight:800;font-size:22px;color:#fff;letter-spacing:-.02em}
 .brand b{color:var(--green)}
-.plate{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:600;font-size:12px;padding:5px 9px;border:1.5px solid rgba(255,255,255,.45);border-radius:8px;letter-spacing:.06em;color:#fff}
+.plate{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:600;font-size:12px;padding:5px 8px;border:1.5px solid rgba(255,255,255,.45);border-radius:8px;letter-spacing:.06em;color:#fff}
 .lang{display:flex;border:1.5px solid rgba(255,255,255,.45);border-radius:999px;overflow:hidden;font-size:12px;font-weight:600}
-.lang button{padding:5px 9px;color:rgba(255,255,255,.75)}
+.lang button{padding:5px 8px;color:rgba(255,255,255,.75)}
 .lang button.on{background:#fff;color:var(--navy)}
+.helpbtn{width:34px;height:34px;border-radius:50%;border:1.5px solid rgba(255,255,255,.45);display:grid;place-items:center;color:#fff;flex:0 0 auto}
+.helpbtn svg{width:18px;height:18px}
 .scroll{flex:1;min-height:0;overflow-y:auto;padding:0 16px 16px;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
 .card.tight{padding:12px 14px}
@@ -43,13 +46,15 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 .h{font-family:var(--display);font-weight:800;font-size:22px;line-height:1.15;margin:0;text-wrap:balance;color:var(--ink)}
 .h.big{font-size:28px}
 .sub{color:var(--ink-2);margin:4px 0 0;font-size:14px}
-.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:56px;border-radius:16px;font-family:var(--display);font-weight:700;font-size:17px;padding:0 18px;transition:transform .08s ease}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:58px;border-radius:16px;font-family:var(--display);font-weight:700;font-size:17px;padding:0 18px;transition:transform .08s ease}
 .btn:active{transform:scale(.985)}
 .btn.primary{background:var(--green);color:#fff}
 .btn.navy{background:var(--navy);color:#fff}
 .btn.ghost{background:var(--card);border:1.5px solid var(--line-2);color:var(--ink)}
+.btn.white{background:#fff;border:2px solid var(--navy);color:var(--navy)}
 .btn.danger{background:var(--bad-bg);color:var(--bad)}
-.btn.sm{min-height:44px;font-size:15px;border-radius:12px}
+.btn.sm{min-height:46px;font-size:15px;border-radius:12px}
+.btn:disabled{opacity:.5}
 .row{display:flex;align-items:center;gap:10px}
 .row.between{justify-content:space-between}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -58,13 +63,12 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 .stat .v{font-family:var(--display);font-weight:800;font-size:20px;color:var(--ink);line-height:1.1}
 .stat .l{font-size:11.5px;color:var(--ink-3);margin-top:2px}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
-.pill.good{background:var(--good-bg);color:var(--good-2,var(--good))}
+.pill.good{background:var(--good-bg);color:var(--green-2)}
 .pill.warn{background:var(--warn-bg);color:var(--warn)}
 .pill.bad{background:var(--bad-bg);color:var(--bad)}
 .pill.info{background:var(--info-bg);color:var(--navy)}
 .pill.mint{background:var(--mint);color:var(--green-2)}
 .ic{width:20px;height:20px;flex:0 0 auto}
-.ic.lg{width:28px;height:28px}
 .icw{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;flex:0 0 auto}
 .icw.mint{background:var(--mint);color:var(--green-2)}
 .icw.info{background:var(--info-bg);color:var(--navy)}
@@ -77,20 +81,22 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 .ring .km{color:var(--ink-2);font-size:14px;margin-top:4px}
 .opt{display:flex;flex-direction:column;gap:10px;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:14px;text-align:left;width:100%}
 .opt.rec{border-color:var(--green);box-shadow:0 0 0 3px var(--mint)}
-.opt .name{font-family:var(--display);font-weight:800;font-size:17px;color:var(--ink)}
+.opt .name{font-family:var(--display);font-weight:800;font-size:19px;color:var(--ink)}
 .opt .addr{font-size:13px;color:var(--ink-2)}
-.meta{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.meta div{background:var(--screen);border-radius:10px;padding:8px 8px}
-.meta .v{font-family:var(--display);font-weight:800;font-size:16px;color:var(--ink);line-height:1.1}
-.meta .l{font-size:11px;color:var(--ink-3)}
 .rank{width:30px;height:28px;border-radius:8px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:13px;background:var(--navy);color:#fff}
-.rank.one{background:var(--green);color:#fff}
-.stats6{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px}.s6{display:flex;gap:8px;align-items:center;min-width:0}.s6i{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:0 0 auto;background:var(--screen)}.s6i.navy{color:var(--navy)}.s6i.green{color:var(--green-2)}.s6i.bad{color:var(--bad)}.s6i.warn{color:var(--warn)}.s6i svg{width:16px;height:16px}.s6 .v{font-family:var(--display);font-weight:800;font-size:14px;line-height:1.15;color:var(--ink)}.s6 .l{font-size:11px;color:var(--ink-3)}
-.trip{display:grid;grid-template-columns:repeat(3,1fr);margin:10px 0 6px}.trip>div{text-align:center;padding:6px 4px;border-left:1px solid var(--line)}.trip>div:first-child{border-left:0}.ti{display:inline-grid;place-items:center;width:30px;height:30px;color:var(--navy)}.ti.green{color:var(--green-2)}.ti svg{width:20px;height:20px}.trip .v{font-family:var(--display);font-weight:800;font-size:16px;color:var(--ink)}.trip .l{font-size:11px;color:var(--ink-3)}
-.logo{height:34px;width:auto;display:block;align-self:flex-start;object-fit:contain}
-.map{position:relative;background:linear-gradient(180deg,var(--mint) 0%,var(--screen) 100%);border:1px solid var(--line);border-radius:18px;overflow:hidden;height:200px}
-.map svg{width:100%;height:100%;display:block}
-.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--card);border-radius:24px 24px 0 0;padding:14px 18px 22px;box-shadow:0 -12px 40px rgba(0,0,0,.25);z-index:20;display:flex;flex-direction:column;gap:12px;animation:up .22s ease}
+.rank.one{background:var(--green)}
+.stats6{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px}
+.s6{display:flex;gap:8px;align-items:center;min-width:0}
+.s6i{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:0 0 auto;background:var(--screen)}
+.s6i.navy{color:var(--navy)}.s6i.green{color:var(--green-2)}.s6i.bad{color:var(--bad)}.s6i.warn{color:var(--warn)}
+.s6i svg{width:16px;height:16px}
+.s6 .v{font-family:var(--display);font-weight:800;font-size:14px;line-height:1.15;color:var(--ink)}
+.s6 .l{font-size:11px;color:var(--ink-3)}
+.alt{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;text-align:left;width:100%}
+.alt .n{font-family:var(--display);font-weight:700;color:var(--ink);font-size:15px}
+.alt .d{font-size:12.5px;color:var(--ink-2)}
+.fold{display:flex;align-items:center;justify-content:center;gap:8px;font-weight:600;color:var(--ink-2);padding:8px;font-size:14px}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:var(--card);border-radius:24px 24px 0 0;padding:14px 18px 22px;box-shadow:0 -12px 40px rgba(0,0,0,.25);z-index:20;display:flex;flex-direction:column;gap:12px;animation:up .22s ease;max-height:88%;overflow-y:auto}
 .scrim{position:absolute;inset:0;background:rgba(10,12,30,.45);z-index:15;animation:fade .2s ease}
 .grab{width:44px;height:5px;border-radius:3px;background:var(--line-2);margin:0 auto 4px}
 @keyframes up{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
@@ -99,7 +105,7 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 .toast{position:absolute;top:54px;left:16px;right:16px;background:var(--green);color:#fff;border-radius:14px;padding:12px 14px;font-weight:600;font-size:14px;z-index:30;display:flex;gap:10px;align-items:center;box-shadow:var(--shadow)}
 .notif{background:var(--card);border-radius:18px;padding:14px;display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);text-align:left;width:100%}
 .notif .app-ic{width:40px;height:40px;border-radius:10px;background:var(--navy);display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:800;font-size:11px;flex:0 0 auto}
-.lock{flex:1;display:flex;flex-direction:column;justify-content:flex-start;gap:28px;padding:38px 18px 18px;background:radial-gradient(120% 70% at 50% 0%,var(--navy-2) 0%,var(--navy) 55%,#0b0a2e 100%);color:#fff}
+.lock{flex:1;display:flex;flex-direction:column;gap:28px;padding:38px 18px 18px;background:radial-gradient(120% 70% at 50% 0%,var(--navy-2) 0%,var(--navy) 55%,#0b0a2e 100%);color:#fff}
 .lock .time{font-family:var(--display);font-weight:800;font-size:72px;line-height:1;text-align:center;letter-spacing:-.04em}
 .lock .date{text-align:center;opacity:.85;font-size:16px;margin-top:6px}
 .steps{display:flex;gap:6px;justify-content:center}
@@ -108,11 +114,12 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 .guide-ic{width:150px;height:150px;border-radius:40px;background:var(--mint);display:grid;place-items:center;margin:0 auto;color:var(--green-2)}
 .guide-ic svg{width:84px;height:84px}
 .num{width:30px;height:30px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:14px;flex:0 0 auto}
-.list{display:flex;flex-direction:column;gap:0}
+.list{display:flex;flex-direction:column}
 .list .li{display:flex;gap:12px;align-items:center;padding:11px 0;border-top:1px solid var(--line)}
 .list .li:first-child{border-top:0}
 .list .li .t{font-weight:600;color:var(--ink)}
 .list .li .s{font-size:12.5px;color:var(--ink-2)}
+.list button.li{width:100%;text-align:left}
 .meter{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
 .meter i{display:block;height:100%;border-radius:5px;background:var(--good)}
 .meter.warn i{background:var(--warn)} .meter.bad i{background:var(--bad)}
@@ -130,8 +137,23 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 .dot{width:12px;height:12px;border-radius:50%;background:var(--green);margin-top:5px;margin-left:5px;box-shadow:0 0 0 3px var(--mint)}
 .dot.nav{background:var(--navy);box-shadow:0 0 0 3px var(--info-bg)}
 .dot.muted{background:var(--line-2);box-shadow:none}
-/* demo panel */
-.demo{width:300px;max-width:100%;background:var(--card);border:1px solid var(--line);box-shadow:0 6px 24px rgba(23,20,90,.08);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;flex:0 0 auto}
+.trip{display:grid;grid-template-columns:repeat(3,1fr);margin:10px 0 6px}
+.trip>div{text-align:center;padding:6px 4px;border-left:1px solid var(--line)}
+.trip>div:first-child{border-left:0}
+.ti{display:inline-grid;place-items:center;width:30px;height:30px;color:var(--navy)}
+.ti.green{color:var(--green-2)}
+.ti svg{width:20px;height:20px}
+.trip .v{font-family:var(--display);font-weight:800;font-size:16px;color:var(--ink)}
+.trip .l{font-size:11px;color:var(--ink-3)}
+.logo{height:34px;width:auto;display:block;align-self:flex-start;object-fit:contain}
+.mapsbtn{display:flex;align-items:center;gap:12px;background:var(--card);border:1.5px solid var(--line-2);border-radius:16px;padding:14px;text-decoration:none;color:var(--ink);font-family:var(--display);font-weight:700;font-size:16px}
+.mapsbtn .ic2{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:13px;color:#fff;flex:0 0 auto}
+.mapsbtn small{display:block;font-family:var(--body);font-weight:500;font-size:12.5px;color:var(--ink-2)}
+.bay{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.bay .dots{display:flex;gap:4px}
+.bay .dots i{width:14px;height:14px;border-radius:4px;background:var(--line-2);display:block}
+.bay .dots i.free{background:var(--green)}
+.demo{width:300px;max-width:100%;background:var(--card);border:1px solid var(--line);box-shadow:0 6px 24px rgba(27,20,100,.08);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;flex:0 0 auto}
 .demo h3{margin:0;font-size:15px}
 .demo p{margin:0;font-size:13px;color:var(--ink-2)}
 .demo .btn{min-height:42px;font-size:14px;border-radius:12px}
@@ -139,20 +161,18 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 .demo input[type=range]{width:100%;accent-color:var(--green)}
 .demo .a{color:var(--green-2);font-weight:600;text-decoration:none;font-size:13px}
 .demo-fab{display:none}
-@media (max-width:640px){
+.note{font-size:12.5px;color:var(--ink-3)}
+@media (max-width:760px){
   .stage{padding:0;gap:0;align-items:stretch}
-  .bezel{width:100%;height:100vh;height:100dvh;max-height:none;border-radius:0;padding:0;box-shadow:none}
+  .bezel{width:100%;height:100vh;height:100dvh;min-height:0;max-height:none;border-radius:0;padding:0;box-shadow:none}
   .phone{border-radius:0}
   .notch{display:none}
   .statusbar{height:calc(10px + env(safe-area-inset-top,0px));padding:0}
   .statusbar span,.statusbar .right{display:none}
   .demo{display:none}
-  .demo.open{display:flex;position:fixed;left:12px;right:12px;bottom:12px;z-index:50;box-shadow:var(--shadow)}
-  .demo-fab{display:flex;position:fixed;right:14px;bottom:88px;z-index:51;background:var(--navy);color:#fff;border-radius:999px;padding:10px 14px;font-weight:700;font-size:13px;box-shadow:var(--shadow)}
+  .demo.open{display:flex;position:fixed;left:12px;right:12px;bottom:12px;z-index:50;box-shadow:var(--shadow);max-height:80vh;overflow-y:auto}
+  .demo-fab{display:flex;position:fixed;right:14px;bottom:96px;z-index:51;background:var(--navy);color:#fff;border-radius:999px;padding:10px 14px;font-weight:700;font-size:13px;box-shadow:var(--shadow)}
 }
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.note{font-size:12.5px;color:var(--ink-3)}
-.hl{color:var(--green-2);font-weight:700}
 </style>
 
 </head>
@@ -166,13 +186,16 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
     </div>
   </div>
   <aside class="demo" id="demo" aria-label="Demo controls">
-    <img class="logo" data-logo alt="Yinson GreenTech"><h3>Demo controls</h3>
+    <img class="logo" data-logo alt="Yinson GreenTech">
+    <h3>Demo controls</h3>
     <p>Drive the prototype through the Pos Malaysia POC scenario without waiting for a real battery to drop.</p>
     <label>Battery <span id="socLbl">62%</span></label>
     <input type="range" id="socRange" min="5" max="100" value="62" aria-label="Simulate battery level">
-    <button class="btn navy" id="dAlert">1 · Drop battery to 28% and send alert</button>
-    <button class="btn ghost" id="dOcc">2 · Charger occupied on arrival</button>
-    <button class="btn ghost" id="dDone">3 · Jump to charging complete</button>
+    <button class="btn navy" id="dAlert">1 · Drop battery to 28%, send alert</button>
+    <button class="btn ghost" id="dOcc">2 · Bay taken on arrival</button>
+    <button class="btn ghost" id="dFail">3 · Charging fails to start</button>
+    <button class="btn ghost" id="dDone">4 · Jump to charging complete</button>
+    <button class="btn ghost" id="dCrit">5 · Critical battery 12%</button>
     <button class="btn ghost" id="dReset">Reset to start of shift</button>
     <a class="a" href="../portal/" id="portalLink">Open the fleet manager portal →</a>
   </aside>
@@ -182,11 +205,12 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 <script>
 (function(){
 const $=s=>document.querySelector(s);
+const LOGO='data:image/png;base64,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';
+document.querySelectorAll('img[data-logo]').forEach(i=>i.src=LOGO);
 const I={
  bolt:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>',
  pin:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.3 7-12a7 7 0 0 0-14 0c0 5.7 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg>',
  clock:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
- coins:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6"/><path d="M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>',
  car:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l2-5a2 2 0 0 1 2-1h10a2 2 0 0 1 2 1l2 5v5H3z"/><circle cx="7.5" cy="16" r="1.5"/><circle cx="16.5" cy="16" r="1.5"/><path d="M3 13h18"/></svg>',
  nav:'<svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 3 21l9-5 9 5z"/></svg>',
  check:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17.5 19 7"/></svg>',
@@ -195,223 +219,232 @@ const I={
  book:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4z"/><path d="M20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg>',
  home:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 12 3l9 8"/><path d="M5 10v10h14V10"/></svg>',
  phone:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>',
+ chat:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>',
+ wrench:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 7a4 4 0 0 1 5-4l-3 3 1 2 2 1 3-3a4 4 0 0 1-5 5L8 20a2 2 0 0 1-3-3z"/></svg>',
+ help:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg>',
  plug:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3v5M15 3v5"/><path d="M6 8h12v3a6 6 0 0 1-12 0z"/><path d="M12 17v4"/></svg>',
- sliders:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 12h3M11 12h9M4 17h12M20 17h0"/><circle cx="15" cy="7" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="17" cy="17" r="2"/></svg>',
- list:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.5M4 12h.5M4 18h.5" stroke-width="3"/></svg>',
+ users:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.5A5 5 0 0 1 21.5 20"/></svg>',
  depot:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10 12 4l9 6v10H3z"/><path d="M8 20v-6h8v6"/></svg>',
  chev:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>',
+ down:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
  back:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>',
- globe:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
- users:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.5A5 5 0 0 1 21.5 20"/></svg>',
  signal:'<svg class="ic" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="14" width="4" height="7" rx="1"/><rect x="10" y="9" width="4" height="12" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg>',
- flag:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h12l-2 4 2 4H5"/></svg>'
+ flag:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h12l-2 4 2 4H5"/></svg>',
+ bell:'<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/></svg>'
 };
 const T={
  en:{
-  lockDate:'Tue, 14 Jan',notifTitle:'drivEV',notifNow:'now',notifBody:'Battery running low ({soc}%). Tap to see where to charge.',swipe:'Tap the alert to open',
-  login:'Start your shift',loginSub:'Pick the van you are driving today. No account needed.',plateLbl:'Vehicle plate',recent:'Vans at this depot',start:'Start shift',depot:'Depot',
-  home:'Home',guide:'Guide',shift:'Shift',history:'History',
-  rangeKm:'{km} km range',batteryOk:'Battery is fine',batteryOkSub:'No action needed. Keep delivering.',batterySoon:'Charge after this run',batterySoonSub:'You will drop below {th}% in about {min} min.',batteryLow:'Charge now',batteryLowSub:'Below the {th}% fleet limit. drivEV found the best stop.',
-  find:'Find charging stop',seeOptions:'See charging options',returnTitle:'Return to depot',returnBy:'Back by {time} with at least {min}% battery',returnOk:'On track',returnRisk:'At risk',returnSub:'Projected {pct}% on return',
-  todayRuns:'Today',runsDone:'{done} of {total} runs done',kmToday:'{km} km driven',nextRun:'Next run',
-  optTitle:'Best stops for you',optSub:'Ranked by total stop time, cost and charger fit. Pos Malaysia rate RM{rate}/kWh applies.',recommended:'Recommended',best:'Best overall',balanced:'Balanced',nearest:'Nearest but slow',
-  totalStop:'Total stop',estCost:'Est. cost',bays:'Bays free',away:'away',travel:'Travel',wait:'Wait',charge:'Charge',chargeTo:'Charge to {pct}%',
-  detailSub:'Whole stop, not just the plug-in time.',holdBay:'Hold a bay for 15 min',holdBayOn:'Bay held until {time}',navigate:'Navigate',navigateSub:'Opens turn-by-turn directions',whyTitle:'Why this stop',
-  why1:'Shortest total stop today',why2:'DC fast charger fits this van',why3:'chargEV preferred network',whyNear:'Closest, but AC charging takes {min} min',
-  navTitle:'Heading to',eta:'ETA',arrived:'I have arrived',occupiedQ:'All bays taken?',occupiedBtn:'Charger is occupied',
-  occTitle:'Bays full on arrival',occSub:'Your fleet has been told. The next best stop is ready.',goBackup:'Go to {name}',stayWait:'Wait here ({min} min est.)',
-  plugTitle:'Plug in and start',plugSub:'Charging starts from the app. No card or wallet needed.',startCharge:'Start charging',bay:'Bay {n}',
-  chargingTitle:'Charging',target:'Target {pct}%',leaveBy:'Leave by',remaining:'{min} min left',costSoFar:'Cost so far',kwh:'{kwh} kWh',stop:'Stop charging',unplugWarn:'You will be alerted when it is done. Move the van within 10 min after that.',
-  doneTitle:'Charging complete',doneSub:'Unplug and move the van so the next driver can use the bay.',session:'This stop',energy:'Energy',cost:'Cost',time:'Stop time',backRoute:'Back to my runs',
-  guideTitle:'How drivEV works',guideSub:'Seven steps. Every step is one tap.',next:'Next',prev:'Back',done:'Got it',
-  g1t:'Start your shift',g1s:'Pick your van plate. That is all.',g2t:'Watch the battery',g2s:'Green is fine. Amber means charge after this run. Red means charge now.',g3t:'Tap the alert',g3s:'When battery is low, drivEV sends an alert. Tap it.',g4t:'Pick the top stop',g4s:'The first stop is the best one. It counts driving, waiting and charging time.',g5t:'Navigate',g5s:'Tap Navigate and follow the directions. The bay is held for 15 minutes.',g6t:'Plug in, tap Start',g6s:'Charging starts from the app. No card needed.',g7t:'Leave when told',g7s:'drivEV tells you when to unplug. Move the van so others can charge.',
-  shiftTitle:'Shift summary',shiftSub:'{depot} · ends {time}',stops:'Charging stops',spent:'Spent on charging',saved:'Time saved vs nearest charger',endShift:'End shift',
-  toastHold:'Bay held for 15 min',toastFleet:'Fleet operations notified',toastRoute:'Re-routed to backup stop',toastShift:'Shift started. Drive safe.',
-  min:'min',km:'km',kmDriven:'km driven',runsLbl:'Runs done',strongFit:'Strong fit',goodFit:'Good fit',fairFit:'Fair fit',bestOverall:'Best overall',balancedOpt:'Balanced option',shorterDist:'Shorter distance',chargerType:'Charger type',fromRoute:'From your route',available:'Available',todayRoute:"Today's route",totalTime:'Total time',stopsLbl:'stop',hist:'Recent stops',offlineNote:'Last update just now',fleetMsg:'Message from fleet',fleetMsgBody:'Please charge before 14:00. Battery must be above 40% at depot.'
+  lockDate:'Tue, 14 Jan',notifNow:'now',notifBody:'Battery {soc}%. Tap to see where to charge.',notifCrit:'Battery critical ({soc}%). Charge now.',swipe:'Tap the alert to open',
+  login:'Start your shift',loginSub:'Pick the van you are driving today. No account, no password.',plateLbl:'Vehicle plate',recent:'Vans at this depot',start:'Start shift',depot:'Depot',depotLine:'Seksyen 15 · 09:00 to 17:00 · back with {min}% or more',
+  home:'Home',guide:'Guide',shift:'Shift',
+  rangeKm:'{km} km range',batteryOk:'Battery is fine',batteryOkSub:'Drive as normal. The app stays quiet.',batterySoon:'Charge after this run',batterySoonSub:'You will drop under {th}% in about {min} min.',batteryLow:'Charge now',batteryLowSub:'Under the {th}% limit. One stop is ready for you.',batteryCrit:'Critical. Charge now.',batteryCritSub:'Under 15%. Go straight to the charger shown. Fleet operations has been told.',
+  find:'Find a charging stop',seeStop:'See my charging stop',returnTitle:'Back at depot',returnBy:'By {time} with at least {min}% battery',returnOk:'On track',returnRisk:'Top-up needed',returnSub:'Expected {pct}% on return',returnFix:'A 15 min top-up before your last run fixes this.',
+  todayRoute:"Today's round",runsDone:'{done} of {total} runs done',kmToday:'{km} km driven',nextRun:'Next run',totalTime:'Time left',stops:'Charging stops',
+  optTitle:'Your charging stop',optSub:'Within 15 min of your route · free bay now · charge to {target}%',recommended:'Recommended',otherOpts:'Other options ({n})',hideOpts:'Hide other options',relaxNote:'No free bays nearby. Showing the shortest expected wait.',
+  totalStop:'Total stop',chargerType:'Charger',fromRoute:'From your route',available:'Bays free',wait:'Wait',travel:'Travel',charge:'Charge',chargeTo:'Charge to {pct}%',free:'free',
+  whyTitle:'Why this stop',why1:'Shortest total stop right now',why2:'Fast charger, fits this van',why3:'chargEV, your fleet network',whyTarget:'Charging to {pct}% covers the rest of today plus the return buffer',
+  go:'Go',goSub:'Opens your maps app',mapsTitle:'Open directions in',waze:'Waze',gmaps:'Google Maps',mapsSub:'Charger pin is set. Come back to this app when you arrive.',imOnWay:'I am on my way',
+  onWayTitle:'On the way to',eta:'ETA',bayNow:'Bays now',updated:'updated just now',arrived:'I have arrived',bayTaken:'Bay taken',bayTakenSub:'All bays full? Tap and we send you to the next one.',
+  occTitle:'Bays full at {name}',occSub:'Logged for your fleet. The next free charger is ready.',goNext:'Go to {name}',stayWait:'Wait here ({min} min expected)',
+  plugTitle:'Park in a free bay, plug in, tap Start',plugSub:'Charging runs on the Pos Malaysia fleet account. You pay nothing.',startCharge:'Start charging',bay:'Bay {n}',payNothing:'You pay nothing',fleetAcct:'Pos Malaysia fleet account',didntStart:'Charging did not start?',
+  failTitle:'Charging did not start',failSub:'Try once more. If it fails again, use the chargEV app or report the charger.',tryAgain:'Try again',openChargev:'Open chargEV app (fallback)',reportFault:'Report charger fault',callSupport:'Call drivEV support',
+  chargingTitle:'Charging',target:'Target {pct}%',leaveAt:'Leave at',remaining:'{min} min left',received:'{kwh} kWh received',stopEarly:'Stop early',buzzNote:'We buzz you at {pct}% and again 10 min later if the van has not moved.',
+  doneTitle:'Charging complete',doneSub:'Unplug, hang up the cable, tap Done.',session:'This stop',energy:'Energy',time:'Stop time',done:'Done',
+  guideTitle:'Driver guide',guideSub:'Six steps. Every step is one tap.',next:'Next',prev:'Back',gotit:'Got it',needHelp:'Need help? Call drivEV {phone}',
+  g1t:'Start your shift',g1s:'Open the app, tap the green button.',g2t:'Drive as normal',g2s:'The app stays quiet.',g3t:'When your phone buzzes, tap it',g3s:'One charger is shown. Tap Go.',g4t:'Park, plug in, tap Start',g4s:'Use a free bay. You pay nothing.',g5t:'Bay taken?',g5s:'Tap the white button. The app sends you to the next one.',g6t:'When it buzzes again',g6s:'Unplug, hang up the cable, tap Done.',
+  shiftTitle:'Shift summary',shiftSub:'{depot} · ends {time}',kmDriven:'km driven',runsLbl:'Runs done',saved:'Time saved vs nearest charger',hist:'Charging stops today',endShift:'End shift',busy:'Bay-taken events',
+  helpTitle:'Help',helpSub:'Someone is on the line during every shift.',helpCall:'Call drivEV support',helpWa:'WhatsApp drivEV support',helpFault:'Report a charger fault',helpPos:'Pos Malaysia operations',helpOk:'All good, go back',
+  toastFleet:'Fleet operations notified',toastRoute:'Re-routed to the next free charger',toastShift:'Shift started. Drive safe.',toastCall:'Calling {n}',toastWa:'Opening WhatsApp to {n}',toastFault:'Fault reported. Fleet and chargEV notified.',toastRetry:'Starting session again',toastChargev:'Opening chargEV app',toastMaps:'Directions opened in {app}',
+  min:'min',km:'km',fleetMsg:'Message from fleet',fleetMsgBody:'Please top up before 14:00. Battery must be above 40% at depot.'
  },
  ms:{
-  lockDate:'Sel, 14 Jan',notifTitle:'drivEV',notifNow:'sekarang',notifBody:'Bateri rendah ({soc}%). Ketik untuk lihat tempat mengecas.',swipe:'Ketik amaran untuk buka',
-  login:'Mula syif anda',loginSub:'Pilih van yang anda pandu hari ini. Tiada akaun diperlukan.',plateLbl:'Nombor plat',recent:'Van di depoh ini',start:'Mula syif',depot:'Depoh',
-  home:'Utama',guide:'Panduan',shift:'Syif',history:'Rekod',
-  rangeKm:'Jarak {km} km',batteryOk:'Bateri mencukupi',batteryOkSub:'Tiada tindakan diperlukan. Teruskan penghantaran.',batterySoon:'Cas selepas laluan ini',batterySoonSub:'Bateri akan jatuh bawah {th}% dalam {min} minit.',batteryLow:'Cas sekarang',batteryLowSub:'Bawah had armada {th}%. drivEV telah cari stesen terbaik.',
-  find:'Cari stesen pengecasan',seeOptions:'Lihat pilihan pengecasan',returnTitle:'Kembali ke depoh',returnBy:'Kembali sebelum {time} dengan bateri sekurang-kurangnya {min}%',returnOk:'Mengikut jadual',returnRisk:'Berisiko',returnSub:'Anggaran {pct}% semasa kembali',
-  todayRuns:'Hari ini',runsDone:'{done} daripada {total} laluan selesai',kmToday:'{km} km dipandu',nextRun:'Laluan seterusnya',
-  optTitle:'Stesen terbaik untuk anda',optSub:'Disusun mengikut jumlah masa berhenti, kos dan kesesuaian pengecas. Kadar Pos Malaysia RM{rate}/kWh.',recommended:'Disyorkan',best:'Terbaik keseluruhan',balanced:'Seimbang',nearest:'Paling dekat tetapi perlahan',
-  totalStop:'Jumlah berhenti',estCost:'Anggaran kos',bays:'Petak kosong',away:'jauh',travel:'Perjalanan',wait:'Menunggu',charge:'Mengecas',chargeTo:'Cas hingga {pct}%',
-  detailSub:'Seluruh perhentian, bukan masa mengecas sahaja.',holdBay:'Tahan petak selama 15 minit',holdBayOn:'Petak ditahan hingga {time}',navigate:'Navigasi',navigateSub:'Buka arah selangkah demi selangkah',whyTitle:'Kenapa stesen ini',
-  why1:'Jumlah masa berhenti paling singkat hari ini',why2:'Pengecas pantas DC sesuai untuk van ini',why3:'Rangkaian pilihan chargEV',whyNear:'Paling dekat, tetapi pengecasan AC ambil {min} minit',
-  navTitle:'Menuju ke',eta:'Tiba',arrived:'Saya sudah tiba',occupiedQ:'Semua petak penuh?',occupiedBtn:'Pengecas sedang digunakan',
-  occTitle:'Petak penuh semasa tiba',occSub:'Armada anda telah dimaklumkan. Stesen seterusnya sudah sedia.',goBackup:'Pergi ke {name}',stayWait:'Tunggu di sini (anggaran {min} minit)',
-  plugTitle:'Pasang palam dan mula',plugSub:'Pengecasan bermula dari aplikasi. Tiada kad atau dompet diperlukan.',startCharge:'Mula mengecas',bay:'Petak {n}',
-  chargingTitle:'Sedang mengecas',target:'Sasaran {pct}%',leaveBy:'Bertolak sebelum',remaining:'{min} minit lagi',costSoFar:'Kos setakat ini',kwh:'{kwh} kWh',stop:'Henti mengecas',unplugWarn:'Anda akan dimaklumkan apabila selesai. Alihkan van dalam 10 minit selepas itu.',
-  doneTitle:'Pengecasan selesai',doneSub:'Cabut palam dan alihkan van supaya pemandu lain boleh guna petak ini.',session:'Perhentian ini',energy:'Tenaga',cost:'Kos',time:'Masa berhenti',backRoute:'Kembali ke laluan saya',
-  guideTitle:'Cara drivEV berfungsi',guideSub:'Tujuh langkah. Setiap langkah satu ketikan.',next:'Seterusnya',prev:'Kembali',done:'Faham',
-  g1t:'Mula syif anda',g1s:'Pilih plat van anda. Itu sahaja.',g2t:'Perhatikan bateri',g2s:'Hijau bermaksud OK. Kuning bermaksud cas selepas laluan ini. Merah bermaksud cas sekarang.',g3t:'Ketik amaran',g3s:'Apabila bateri rendah, drivEV hantar amaran. Ketik amaran itu.',g4t:'Pilih stesen teratas',g4s:'Stesen pertama ialah yang terbaik. Ia mengira masa memandu, menunggu dan mengecas.',g5t:'Navigasi',g5s:'Ketik Navigasi dan ikut arah. Petak ditahan selama 15 minit.',g6t:'Pasang palam, ketik Mula',g6s:'Pengecasan bermula dari aplikasi. Tiada kad diperlukan.',g7t:'Bertolak apabila diberitahu',g7s:'drivEV beritahu bila perlu cabut palam. Alihkan van supaya orang lain boleh mengecas.',
-  shiftTitle:'Ringkasan syif',shiftSub:'{depot} · tamat {time}',stops:'Perhentian mengecas',spent:'Dibelanjakan untuk mengecas',saved:'Masa dijimatkan berbanding pengecas terdekat',endShift:'Tamat syif',
-  toastHold:'Petak ditahan selama 15 minit',toastFleet:'Operasi armada dimaklumkan',toastRoute:'Dihalakan ke stesen sandaran',toastShift:'Syif bermula. Pandu dengan selamat.',
-  min:'minit',km:'km',kmDriven:'km dipandu',runsLbl:'Laluan selesai',strongFit:'Sangat sesuai',goodFit:'Sesuai',fairFit:'Boleh diterima',bestOverall:'Terbaik keseluruhan',balancedOpt:'Pilihan seimbang',shorterDist:'Jarak lebih dekat',chargerType:'Jenis pengecas',fromRoute:'Dari laluan anda',available:'Tersedia',todayRoute:'Laluan hari ini',totalTime:'Jumlah masa',stopsLbl:'hentian',hist:'Perhentian terkini',offlineNote:'Kemas kini sebentar tadi',fleetMsg:'Mesej daripada armada',fleetMsgBody:'Sila cas sebelum 14:00. Bateri mesti melebihi 40% di depoh.'
+  lockDate:'Sel, 14 Jan',notifNow:'sekarang',notifBody:'Bateri {soc}%. Ketik untuk lihat tempat mengecas.',notifCrit:'Bateri kritikal ({soc}%). Cas sekarang.',swipe:'Ketik amaran untuk buka',
+  login:'Mula syif anda',loginSub:'Pilih van yang anda pandu hari ini. Tiada akaun, tiada kata laluan.',plateLbl:'Nombor plat',recent:'Van di depoh ini',start:'Mula syif',depot:'Depoh',depotLine:'Seksyen 15 · 09:00 hingga 17:00 · kembali dengan {min}% atau lebih',
+  home:'Utama',guide:'Panduan',shift:'Syif',
+  rangeKm:'Jarak {km} km',batteryOk:'Bateri mencukupi',batteryOkSub:'Pandu seperti biasa. Aplikasi ini senyap.',batterySoon:'Cas selepas laluan ini',batterySoonSub:'Bateri akan jatuh bawah {th}% dalam {min} minit.',batteryLow:'Cas sekarang',batteryLowSub:'Bawah had {th}%. Satu hentian sudah sedia untuk anda.',batteryCrit:'Kritikal. Cas sekarang.',batteryCritSub:'Bawah 15%. Terus ke pengecas yang ditunjukkan. Operasi armada telah dimaklumkan.',
+  find:'Cari hentian mengecas',seeStop:'Lihat hentian mengecas saya',returnTitle:'Kembali ke depoh',returnBy:'Sebelum {time} dengan bateri sekurang-kurangnya {min}%',returnOk:'Mengikut jadual',returnRisk:'Perlu tambah cas',returnSub:'Anggaran {pct}% semasa kembali',returnFix:'Tambah cas 15 minit sebelum laluan terakhir membetulkannya.',
+  todayRoute:'Pusingan hari ini',runsDone:'{done} daripada {total} laluan selesai',kmToday:'{km} km dipandu',nextRun:'Laluan seterusnya',totalTime:'Masa berbaki',stops:'Hentian mengecas',
+  optTitle:'Hentian mengecas anda',optSub:'Dalam 15 minit dari laluan · petak kosong sekarang · cas hingga {target}%',recommended:'Disyorkan',otherOpts:'Pilihan lain ({n})',hideOpts:'Sembunyikan pilihan lain',relaxNote:'Tiada petak kosong berdekatan. Menunjukkan masa menunggu paling singkat.',
+  totalStop:'Jumlah berhenti',chargerType:'Pengecas',fromRoute:'Dari laluan anda',available:'Petak kosong',wait:'Menunggu',travel:'Perjalanan',charge:'Mengecas',chargeTo:'Cas hingga {pct}%',free:'kosong',
+  whyTitle:'Kenapa hentian ini',why1:'Jumlah masa berhenti paling singkat sekarang',why2:'Pengecas pantas, sesuai untuk van ini',why3:'chargEV, rangkaian armada anda',whyTarget:'Mengecas hingga {pct}% mencukupi untuk hari ini dan penimbal pulang',
+  go:'Pergi',goSub:'Membuka aplikasi peta anda',mapsTitle:'Buka arah dalam',waze:'Waze',gmaps:'Google Maps',mapsSub:'Pin pengecas sudah ditetapkan. Kembali ke aplikasi ini apabila tiba.',imOnWay:'Saya dalam perjalanan',
+  onWayTitle:'Dalam perjalanan ke',eta:'Tiba',bayNow:'Petak sekarang',updated:'dikemas kini sebentar tadi',arrived:'Saya sudah tiba',bayTaken:'Petak penuh',bayTakenSub:'Semua petak penuh? Ketik dan kami hantar anda ke yang seterusnya.',
+  occTitle:'Petak penuh di {name}',occSub:'Direkodkan untuk armada anda. Pengecas kosong seterusnya sudah sedia.',goNext:'Pergi ke {name}',stayWait:'Tunggu di sini (anggaran {min} minit)',
+  plugTitle:'Parkir di petak kosong, pasang palam, ketik Mula',plugSub:'Pengecasan guna akaun armada Pos Malaysia. Anda tidak bayar apa-apa.',startCharge:'Mula mengecas',bay:'Petak {n}',payNothing:'Anda tidak bayar',fleetAcct:'Akaun armada Pos Malaysia',didntStart:'Pengecasan tidak bermula?',
+  failTitle:'Pengecasan tidak bermula',failSub:'Cuba sekali lagi. Jika gagal lagi, guna aplikasi chargEV atau laporkan pengecas.',tryAgain:'Cuba lagi',openChargev:'Buka aplikasi chargEV (sandaran)',reportFault:'Laporkan kerosakan pengecas',callSupport:'Hubungi sokongan drivEV',
+  chargingTitle:'Sedang mengecas',target:'Sasaran {pct}%',leaveAt:'Bertolak pada',remaining:'{min} minit lagi',received:'{kwh} kWh diterima',stopEarly:'Henti awal',buzzNote:'Kami akan getarkan telefon pada {pct}% dan sekali lagi 10 minit kemudian jika van belum dialihkan.',
+  doneTitle:'Pengecasan selesai',doneSub:'Cabut palam, gantung kabel, ketik Selesai.',session:'Hentian ini',energy:'Tenaga',time:'Masa berhenti',done:'Selesai',
+  guideTitle:'Panduan pemandu',guideSub:'Enam langkah. Setiap langkah satu ketikan.',next:'Seterusnya',prev:'Kembali',gotit:'Faham',needHelp:'Perlu bantuan? Hubungi drivEV {phone}',
+  g1t:'Mula syif anda',g1s:'Buka aplikasi, ketik butang hijau.',g2t:'Pandu seperti biasa',g2s:'Aplikasi ini senyap.',g3t:'Bila telefon bergetar, ketik',g3s:'Satu pengecas ditunjukkan. Ketik Pergi.',g4t:'Parkir, pasang palam, ketik Mula',g4s:'Guna petak kosong. Anda tidak bayar.',g5t:'Petak penuh?',g5s:'Ketik butang putih. Aplikasi hantar anda ke yang seterusnya.',g6t:'Bila bergetar lagi',g6s:'Cabut palam, gantung kabel, ketik Selesai.',
+  shiftTitle:'Ringkasan syif',shiftSub:'{depot} · tamat {time}',kmDriven:'km dipandu',runsLbl:'Laluan selesai',saved:'Masa dijimatkan berbanding pengecas terdekat',hist:'Hentian mengecas hari ini',endShift:'Tamat syif',busy:'Kejadian petak penuh',
+  helpTitle:'Bantuan',helpSub:'Ada orang di talian sepanjang syif.',helpCall:'Hubungi sokongan drivEV',helpWa:'WhatsApp sokongan drivEV',helpFault:'Laporkan kerosakan pengecas',helpPos:'Operasi Pos Malaysia',helpOk:'Semua okey, kembali',
+  toastFleet:'Operasi armada dimaklumkan',toastRoute:'Dihalakan ke pengecas kosong seterusnya',toastShift:'Syif bermula. Pandu dengan selamat.',toastCall:'Menghubungi {n}',toastWa:'Membuka WhatsApp ke {n}',toastFault:'Kerosakan dilaporkan. Armada dan chargEV dimaklumkan.',toastRetry:'Memulakan sesi semula',toastChargev:'Membuka aplikasi chargEV',toastMaps:'Arah dibuka dalam {app}',
+  min:'minit',km:'km',fleetMsg:'Mesej daripada armada',fleetMsgBody:'Sila tambah cas sebelum 14:00. Bateri mesti melebihi 40% di depoh.'
  }
 };
-const LOGO='data:image/png;base64,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';
-document.querySelectorAll('img[data-logo]').forEach(i=>i.src=LOGO);
-const RATE=1.20, BATT=60, KM_PER_KWH=4.2, TH=30, RET=40;
+const BATT=60, KM_PER_KWH=4.2, TH=30, CRIT=15, RET=40, SUPPORT='1-300-88-0000', POS_OPS='03-2267 0000';
 const CH=[
- {id:'c1',name:'chargEV Jaya One',net:'chargEV',addr:'Jalan Universiti, Petaling Jaya',type:'DC 60 kW',dc:true,km:3.1,travel:8,wait:0,charge:24,bays:'2/4',baysFree:2,fit:'best',rate:1.20},
- {id:'c2',name:'chargEV Sunway Pyramid',net:'chargEV',addr:'Bandar Sunway, Subang Jaya',type:'DC 50 kW',dc:true,km:6.4,travel:14,wait:5,charge:30,bays:'1/2',baysFree:1,fit:'balanced',rate:1.20},
- {id:'c3',name:'TNB Electron PJ Seksyen 14',net:'TNB Electron',addr:'Jalan 14/20, Petaling Jaya',type:'AC 22 kW',dc:false,km:1.8,travel:5,wait:20,charge:85,bays:'0/2',baysFree:0,fit:'nearest',rate:1.00}
+ {id:'c1',name:'chargEV Jaya One',addr:'Jalan Universiti, Petaling Jaya',type:'DC 60 kW',kw:60,km:3.1,travel:8,wait:0,bays:4,free:2,fit:'best',lat:3.1180,lng:101.6355},
+ {id:'c2',name:'chargEV Sunway Pyramid',addr:'Bandar Sunway, Subang Jaya',type:'DC 50 kW',kw:50,km:6.4,travel:14,wait:5,bays:2,free:1,fit:'balanced',lat:3.0733,lng:101.6067},
+ {id:'c3',name:'chargEV Subang Parade',addr:'SS16, Subang Jaya',type:'AC 22 kW',kw:22,km:4.8,travel:11,wait:0,bays:2,free:1,fit:'nearest',lat:3.0820,lng:101.5860}
 ];
 const DEPOT='Pos Malaysia Shah Alam';
-const S0=()=>({lang:'en',screen:'login',plate:'',soc:62,sel:null,hold:null,occupied:false,charging:null,guideStep:0,toast:null,sheet:null,runsDone:3,km:84,stops:[],demoOpen:false,lastTick:Date.now(),fleetMsg:false});
+const S0=()=>({lang:'en',screen:'login',plate:'',soc:62,sel:null,charging:null,guideStep:0,toast:null,sheet:null,runsDone:3,km:84,stops:[],busy:0,demoOpen:false,fleetMsg:false,navProg:0,showAlt:false,failCount:0,crit:false});
 let S=S0(); let timers={};
 const t=(k,v={})=>{let s=(T[S.lang][k]??T.en[k]??k);Object.keys(v).forEach(x=>s=s.replaceAll('{'+x+'}',v[x]));return s;};
 const range=soc=>Math.round(soc/100*BATT*KM_PER_KWH);
-const fmtRM=n=>'RM '+n.toFixed(2);
-const now=()=>{const d=new Date();return {h:d.getHours(),m:d.getMinutes()}};
-const addMin=(mins)=>{const d=new Date(Date.now()+mins*60000);return d.toTimeString().slice(0,5)};
+const addMin=mins=>new Date(Date.now()+mins*60000).toTimeString().slice(0,5);
 const kwhNeeded=(from,to)=>Math.max(0,(to-from)/100*BATT);
-const costTo=(ch,from,to=80)=>kwhNeeded(from,to)*ch.rate;
-const total=ch=>ch.travel+ch.wait+ch.charge;
-const projReturn=()=>Math.max(0,Math.round(S.soc-18));
-const level=()=>S.soc<TH?'low':S.soc<TH+10?'soon':'ok';
+const runsLeft=()=>6-S.runsDone;
+const target=()=>Math.min(80,Math.ceil((runsLeft()*8+RET)/5)*5);
+const chargeMin=(ch,from)=>Math.max(5,Math.round(kwhNeeded(from,target())/ch.kw*60*(ch.kw>=50?1.15:1)));
+const total=ch=>ch.travel+ch.wait+chargeMin(ch,S.soc);
+const projReturn=()=>Math.max(0,Math.round(S.soc-runsLeft()*8));
+const level=()=>S.soc<CRIT?'crit':S.soc<TH?'low':S.soc<TH+10?'soon':'ok';
+const ranked=()=>{const free=CH.filter(c=>c.free>0);const list=(free.length?free:CH).slice().sort((a,b)=>total(a)-total(b));return {list,relaxed:!free.length}};
+const brandName=n=>n.replace('chargEV','charg<b style="color:var(--green)">EV</b>');
+const shortName=n=>n.split(' ').slice(0,2).join(' ');
 function toast(msg){S.toast=msg;render();clearTimeout(timers.toast);timers.toast=setTimeout(()=>{S.toast=null;render()},2400)}
-function go(screen,extra={}){Object.assign(S,{screen},extra);S.sheet=null;render();$('#app').scrollTop=0;const sc=$('.scroll');if(sc)sc.scrollTop=0}
-function ring(pct,size=188,stroke=14,color){const r=(size-stroke)/2,c=2*Math.PI*r;const col=color||(pct<TH?'var(--bad)':pct<TH+10?'var(--warn)':'var(--good)');return `<svg viewBox="0 0 ${size} ${size}" aria-hidden="true"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--line)" stroke-width="${stroke}"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${col}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-pct/100)}" style="transition:stroke-dashoffset .5s ease"/></svg>`}
-function header(back,title){return `<div class="topbar">${back?`<button class="row" data-go="${back}" aria-label="${t('prev')}" style="gap:4px;color:#fff">${I.back}<span style="font-weight:600;font-size:14px">${t('prev')}</span></button>`:`<div class="brand">driv<b>EV</b></div>`}<div class="row" style="gap:8px"><span class="plate">${S.plate||'—'}</span>${langToggle()}</div></div>`}
-function langToggle(){return `<div class="lang" role="group" aria-label="Language"><button data-lang="en" class="${S.lang==='en'?'on':''}">EN</button><button data-lang="ms" class="${S.lang==='ms'?'on':''}">BM</button></div>`}
+function go(screen,extra={}){Object.assign(S,{screen},extra);S.sheet=null;render();const sc=$('.scroll');if(sc)sc.scrollTop=0}
+function ring(pct,color){const size=188,stroke=14,r=(size-stroke)/2,c=2*Math.PI*r;const col=color||(pct<TH?'var(--bad)':pct<TH+10?'var(--warn)':'var(--good)');return `<svg viewBox="0 0 ${size} ${size}" aria-hidden="true"><circle cx="94" cy="94" r="${r}" fill="none" stroke="var(--line)" stroke-width="${stroke}"/><circle cx="94" cy="94" r="${r}" fill="none" stroke="${col}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-pct/100)}" style="transition:stroke-dashoffset .5s ease"/></svg>`}
+function header(back){return `<div class="topbar">${back?`<button class="row" data-go="${back}" aria-label="${t('prev')}" style="gap:4px;color:#fff">${I.back}<span style="font-weight:600;font-size:14px">${t('prev')}</span></button>`:`<div class="brand">driv<b>EV</b></div>`}<div class="row" style="gap:6px"><span class="plate">${S.plate||'—'}</span><div class="lang" role="group" aria-label="Language"><button data-lang="en" class="${S.lang==='en'?'on':''}">EN</button><button data-lang="ms" class="${S.lang==='ms'?'on':''}">BM</button></div><button class="helpbtn" data-sheet="help" aria-label="${t('helpTitle')}">${I.help}</button></div></div>`}
 function tabbar(on){const tabs=[['home',I.home,t('home')],['guide',I.book,t('guide')],['shift',I.flag,t('shift')]];return `<nav class="tabbar">${tabs.map(([k,ic,l])=>`<button data-go="${k}" class="${on===k?'on':''}">${ic}<span>${l}</span></button>`).join('')}</nav>`}
-function routeMap(progress=0.35,dest){return `<div class="map"><svg viewBox="0 0 360 200" aria-hidden="true">
-<defs><pattern id="g" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0v24" fill="none" stroke="var(--line)" stroke-width="1"/></pattern></defs>
-<rect width="360" height="200" fill="url(#g)" opacity=".7"/>
-<path d="M20 60 C 90 60, 120 120, 200 120 S 320 150, 340 90" fill="none" stroke="var(--line-2)" stroke-width="10" stroke-linecap="round"/>
-<path d="M40 170 C 100 150, 160 40, 230 40 S 330 60, 345 30" fill="none" stroke="var(--line-2)" stroke-width="6" stroke-linecap="round" opacity=".6"/>
-<path id="rt" d="M40 150 C 90 140, 120 90, 190 85 S 280 60, 310 50" fill="none" stroke="var(--green)" stroke-width="5" stroke-linecap="round" stroke-dasharray="6 6" opacity=".45"/>
-<path d="M40 150 C 90 140, 120 90, 190 85 S 280 60, 310 50" fill="none" stroke="var(--green)" stroke-width="5" stroke-linecap="round" pathLength="1" stroke-dasharray="${progress} 1"/>
-<circle cx="40" cy="150" r="9" fill="var(--card)" stroke="var(--navy)" stroke-width="4"/>
-<g transform="translate(310 50)"><circle r="14" fill="var(--green)"/><path d="M1-8-4 1h4l-1 7 5-9h-4z" fill="#fff"/></g>
-<text x="296" y="84" font-size="11" font-weight="700" fill="var(--ink)" font-family="Plus Jakarta Sans,sans-serif" text-anchor="middle">${dest||''}</text>
-<text x="40" y="178" font-size="10.5" fill="var(--ink-2)" font-family="IBM Plex Sans,sans-serif" text-anchor="middle">Petaling Jaya</text>
-</svg></div>`}
-function fitPill(f){return f==='best'?`<span class="pill good">${I.check}${t('best')}</span>`:f==='balanced'?`<span class="pill info">${t('balanced')}</span>`:`<span class="pill warn">${t('nearest')}</span>`}
-function brandName(n){return n.replace('chargEV','charg<b style="color:var(--green)">EV</b>')}
-function fitLabel(f){return f==='best'?[t('strongFit'),t('bestOverall'),'good']:f==='balanced'?[t('goodFit'),t('balancedOpt'),'info']:[t('fairFit'),t('shorterDist'),'warn']}
 function st6(ic,v,l,c){return `<div class="s6"><span class="s6i ${c}">${ic}</span><div><div class="v">${v}</div><div class="l">${l}</div></div></div>`}
-const tripTime=()=>{const m=(6-S.runsDone)*42+(level()==='ok'?0:total(CH[0]));return Math.floor(m/60)+' h '+String(m%60).padStart(2,'0')+' min'};
-function optCard(ch,i){const rec=i===0;const [fl,fs,fc]=fitLabel(ch.fit);return `<button class="opt ${rec?'rec':''}" data-sel="${ch.id}">
- <div class="row between"><div class="row"><span class="rank ${rec?'one':''}">0${i+1}</span>${rec?`<span class="pill good">${t('recommended')}</span>`:`<span class="pill ${fc}">${fl}</span>`}</div>${I.chev.replace('class="ic"','class="ic" style="color:var(--ink-3)"')}</div>
+function bayDots(ch){return `<span class="dots">${Array.from({length:ch.bays},(_,i)=>`<i class="${i<ch.free?'free':''}"></i>`).join('')}</span>`}
+function recCard(ch){return `<div class="opt rec">
+ <div class="row between"><div class="row"><span class="rank one">01</span><span class="pill good">${t('recommended')}</span></div><span class="pill mint">${bayDots(ch)} ${ch.free}/${ch.bays} ${t('free')}</span></div>
  <div><div class="name">${brandName(ch.name)}</div><div class="addr">${ch.addr}</div></div>
- <div class="stats6">${st6(I.clock,total(ch)+' '+t('min'),t('totalStop'),'navy')}${st6(I.coins,'RM '+costTo(ch,S.soc).toFixed(0),t('estCost'),'navy')}${st6(I.bolt,ch.type,t('chargerType'),'green')}${st6(I.pin,ch.km+' '+t('km'),t('fromRoute'),'navy')}${st6(I.users,ch.bays,t('available'),ch.baysFree?'navy':'bad')}${st6(I.signal,fl,fs,fc==='good'?'green':fc==='info'?'navy':'warn')}</div>
-</button>`}
+ <div class="stats6">${st6(I.clock,total(ch)+' '+t('min'),t('totalStop'),'navy')}${st6(I.pin,ch.km+' '+t('km'),t('fromRoute'),'navy')}${st6(I.bolt,ch.type,t('chargerType'),'green')}${st6(I.batt,chargeMin(ch,S.soc)+' '+t('min'),t('chargeTo',{pct:target()}),'green')}</div>
+ <div class="list"><div class="li"><span style="color:var(--green-2)">${I.check}</span><div class="t" style="font-weight:500">${t('why1')}</div></div><div class="li"><span style="color:var(--green-2)">${I.check}</span><div class="t" style="font-weight:500">${t('whyTarget',{pct:target()})}</div></div></div>
+ <button class="btn primary" data-sheet="maps" data-pick="${ch.id}">${I.nav}${t('go')}</button><div class="note" style="text-align:center;margin-top:-4px">${t('goSub')}</div></div>`}
+function altCard(ch,i){return `<button class="alt" data-sheet="maps" data-pick="${ch.id}"><span class="rank">0${i+2}</span><div style="flex:1;min-width:0"><div class="n">${brandName(ch.name)}</div><div class="d">${total(ch)} ${t('min')} ${t('totalStop').toLowerCase()} · ${ch.km} ${t('km')} · ${ch.type} · ${ch.free}/${ch.bays} ${t('free')}</div></div>${I.chev}</button>`}
 const V={
- lock(){return `<div class="lock"><div><div class="time">${$('#clock').textContent}</div><div class="date">${t('lockDate')}</div></div>
- <button class="notif" data-go="options" data-alert="1"><div class="app-ic">drivEV</div><div style="flex:1;min-width:0;color:var(--ink)"><div class="row between"><b style="font-size:13px">${t('notifTitle')}</b><span style="font-size:12px;color:var(--ink-3)">${t('notifNow')}</span></div><div style="font-size:14px;line-height:1.35">${t('notifBody',{soc:S.soc})}</div></div></button>
+ lock(){const crit=level()==='crit';return `<div class="lock"><div><div class="time">${$('#clock').textContent}</div><div class="date">${t('lockDate')}</div></div>
+ <button class="notif" data-go="options"><div class="app-ic">drivEV</div><div style="flex:1;min-width:0;color:var(--ink)"><div class="row between"><b style="font-size:13px">drivEV</b><span style="font-size:12px;color:var(--ink-3)">${t('notifNow')}</span></div><div style="font-size:14px;line-height:1.35">${crit?t('notifCrit',{soc:S.soc}):t('notifBody',{soc:S.soc})}</div></div></button>
  <div style="text-align:center;opacity:.8;font-size:13px;margin-top:auto">${t('swipe')}</div></div>`},
  login(){const plates=['WVL 2301','WVL 2308','WVL 2315','WVL 2322','WVL 2340'];return `${header()}<div class="scroll">
  <img class="logo" src="${LOGO}" alt="Yinson GreenTech" style="margin-top:2px"><div style="padding:0 2px"><div class="eyebrow">${t('depot')}</div><h1 class="h big" style="margin-top:4px">${t('login')}</h1><p class="sub">${t('loginSub')}</p></div>
  <div class="card"><div class="eyebrow" style="margin-bottom:8px">${t('plateLbl')}</div><input class="input" id="plateIn" value="${S.plate}" placeholder="WVL 2301" aria-label="${t('plateLbl')}"><div class="eyebrow" style="margin:14px 0 8px">${t('recent')}</div><div class="chips">${plates.map(p=>`<button class="chip ${S.plate===p?'on':''}" data-plate="${p}">${p}</button>`).join('')}</div></div>
- <div class="card tight row"><span class="icw mint">${I.depot}</span><div><div style="font-weight:600">${DEPOT}</div><div class="note">Seksyen 15 · 09:00–17:00 · min ${RET}% ${t('returnTitle').toLowerCase()}</div></div></div>
- <button class="btn primary" data-start="1" ${S.plate?'':'disabled style="opacity:.5"'}>${t('start')}${I.chev}</button>
+ <div class="card tight row"><span class="icw mint">${I.depot}</span><div><div style="font-weight:600">${DEPOT}</div><div class="note">${t('depotLine',{min:RET})}</div></div></div>
+ <button class="btn primary" data-start="1" ${S.plate?'':'disabled'}>${t('start')}${I.chev}</button>
  </div>`},
- home(){const lv=level();const pr=projReturn();return `${header()}<div class="scroll">
- ${S.fleetMsg?`<div class="card tight row" style="border-color:var(--navy);background:var(--info-bg)"><span class="icw info">${I.users}</span><div style="flex:1"><div class="eyebrow" style="color:var(--navy)">${t('fleetMsg')}</div><div style="font-size:13.5px;font-weight:600">${t('fleetMsgBody')}</div></div><button data-dismiss-msg="1" aria-label="Dismiss" style="color:var(--ink-3);font-size:20px;padding:4px">×</button></div>`:''}
+ home(){const lv=level();const pr=projReturn();const risk=pr<RET&&lv!=='low'&&lv!=='crit';const m=runsLeft()*42;return `${header()}<div class="scroll">
+ ${S.fleetMsg?`<div class="card tight row" style="border-color:var(--navy);background:var(--info-bg)"><span class="icw info">${I.bell}</span><div style="flex:1"><div class="eyebrow" style="color:var(--navy)">${t('fleetMsg')}</div><div style="font-size:13.5px;font-weight:600">${t('fleetMsgBody')}</div></div><button data-dismiss-msg="1" aria-label="Dismiss" style="color:var(--ink-3);font-size:20px;padding:4px">×</button></div>`:''}
  <div class="card" style="text-align:center;padding-top:20px"><div class="ring">${ring(S.soc)}<div class="c"><div class="pct">${S.soc}%</div><div class="km">${t('rangeKm',{km:range(S.soc)})}</div></div></div>
- <div style="margin-top:14px"><div class="row" style="justify-content:center;gap:8px"><span class="icw ${lv==='ok'?'mint':lv==='soon'?'warn':'bad'}">${lv==='ok'?I.check:lv==='soon'?I.clock:I.warn}</span><h2 class="h" style="font-size:20px">${t(lv==='ok'?'batteryOk':lv==='soon'?'batterySoon':'batteryLow')}</h2></div><p class="sub">${t(lv==='ok'?'batteryOkSub':lv==='soon'?'batterySoonSub':'batteryLowSub',{th:TH,min:Math.max(5,Math.round((S.soc-TH)*4))})}</p></div>
- ${lv==='low'?`<button class="btn primary" data-go="options" style="margin-top:14px">${I.bolt}${t('seeOptions')}</button>`:`<button class="btn ghost sm" data-go="options" style="margin-top:14px">${I.bolt}${t('find')}</button>`}</div>
- <div class="card tight"><div class="row between"><div class="row"><span class="icw info">${I.depot}</span><div><div style="font-weight:700;font-family:var(--display)">${t('returnTitle')}</div><div class="note">${t('returnBy',{time:'17:00',min:RET})}</div></div></div><span class="pill ${pr>=RET?'good':'bad'}">${pr>=RET?t('returnOk'):t('returnRisk')}</span></div><div class="meter ${pr>=RET?'':'bad'}" style="margin-top:10px"><i style="width:${Math.min(100,pr)}%"></i></div><div class="note" style="margin-top:6px">${t('returnSub',{pct:pr})}</div></div>
+ <div style="margin-top:14px"><div class="row" style="justify-content:center;gap:8px"><span class="icw ${lv==='ok'?'mint':lv==='soon'?'warn':'bad'}">${lv==='ok'?I.check:lv==='soon'?I.clock:I.warn}</span><h2 class="h" style="font-size:20px">${t(lv==='ok'?'batteryOk':lv==='soon'?'batterySoon':lv==='low'?'batteryLow':'batteryCrit')}</h2></div><p class="sub">${t(lv==='ok'?'batteryOkSub':lv==='soon'?'batterySoonSub':lv==='low'?'batteryLowSub':'batteryCritSub',{th:TH,min:Math.max(5,Math.round((S.soc-TH)*4))})}</p></div>
+ ${lv==='low'||lv==='crit'||risk?`<button class="btn primary" data-go="options" style="margin-top:14px">${I.bolt}${t('seeStop')}</button>`:`<button class="btn ghost sm" data-go="options" style="margin-top:14px">${I.bolt}${t('find')}</button>`}</div>
+ <div class="card tight"><div class="row between"><div class="row"><span class="icw info">${I.depot}</span><div><div style="font-weight:700;font-family:var(--display)">${t('returnTitle')}</div><div class="note">${t('returnBy',{time:'17:00',min:RET})}</div></div></div><span class="pill ${pr>=RET?'good':'warn'}">${pr>=RET?t('returnOk'):t('returnRisk')}</span></div><div class="meter ${pr>=RET?'':'warn'}" style="margin-top:10px"><i style="width:${Math.min(100,pr)}%"></i></div><div class="note" style="margin-top:6px">${t('returnSub',{pct:pr})}${pr<RET?' · '+t('returnFix'):''}</div></div>
  <div class="card tight"><div class="row between"><div class="eyebrow">${t('todayRoute')}</div><span class="note">${t('runsDone',{done:S.runsDone,total:6})}</span></div>
- <div class="trip"><div><span class="ti">${I.car}</span><div class="v">${tripTime()}</div><div class="l">${t('totalTime')}</div></div><div><span class="ti green">${I.bolt}</span><div class="v">${level()==='ok'?0:1}</div><div class="l">${t('stops')}</div></div><div><span class="ti">${I.coins}</span><div class="v">~RM ${level()==='ok'?0:Math.round(costTo(CH[0],S.soc))}</div><div class="l">${t('estCost')}</div></div></div>
- <div class="list"><div class="li"><span class="dot nav"></span><div style="flex:1"><div class="t">${t('nextRun')} · Damansara Utama</div><div class="s">12 drops · 11 km · ${t('kmToday',{km:S.km})}</div></div>${I.chev}</div></div></div>
+ <div class="trip"><div><span class="ti">${I.clock}</span><div class="v">${Math.floor(m/60)} h ${String(m%60).padStart(2,'0')}</div><div class="l">${t('totalTime')}</div></div><div><span class="ti green">${I.bolt}</span><div class="v">${lv==='ok'&&!risk?0:1}</div><div class="l">${t('stops')}</div></div><div><span class="ti">${I.car}</span><div class="v">${S.km} ${t('km')}</div><div class="l">${t('kmDriven')}</div></div></div>
+ <div class="list"><div class="li"><span class="dot nav"></span><div style="flex:1"><div class="t">${t('nextRun')} · Damansara Utama</div><div class="s">12 drops · 11 km</div></div>${I.chev}</div></div></div>
  </div>${tabbar('home')}`},
- options(){return `${header('home')}<div class="scroll">
- <div style="padding:2px 2px 0"><div class="row between"><div class="row" style="gap:6px"><span class="pill bad">${I.batt}${S.soc}%</span><span class="note">${t('rangeKm',{km:range(S.soc)})}</span></div></div><h1 class="h big" style="margin-top:8px">${t('optTitle')}</h1><p class="sub">${t('optSub',{rate:RATE.toFixed(2)})}</p></div>
- ${CH.map(optCard).join('')}
+ options(){const {list,relaxed}=ranked();const rec=list[0],alts=list.slice(1);return `${header('home')}<div class="scroll">
+ <div style="padding:2px 2px 0"><div class="row" style="gap:6px"><span class="pill ${S.soc<TH?'bad':'warn'}">${I.batt}${S.soc}%</span><span class="note">${t('rangeKm',{km:range(S.soc)})}</span></div><h1 class="h big" style="margin-top:8px">${t('optTitle')}</h1><p class="sub">${t('optSub',{target:target()})}</p>${relaxed?`<p class="sub" style="color:var(--warn);font-weight:600">${t('relaxNote')}</p>`:''}</div>
+ ${recCard(rec)}
+ <button class="fold" data-togglealt="1">${S.showAlt?t('hideOpts'):t('otherOpts',{n:alts.length})}${S.showAlt?I.down.replace('class="ic"','class="ic" style="transform:rotate(180deg)"'):I.down}</button>
+ ${S.showAlt?alts.map(altCard).join(''):''}
  </div>`},
- detail(){const ch=CH.find(c=>c.id===S.sel);const kw=kwhNeeded(S.soc,80);return `${header('options')}<div class="scroll">
- <div style="padding:2px 2px 0"><div class="row" style="gap:6px">${S.sel==='c1'?`<span class="pill good">${t('recommended')}</span>`:fitPill(ch.fit)}<span class="pill mint">${ch.net}</span></div><h1 class="h big" style="margin-top:8px">${ch.name}</h1><p class="sub">${ch.addr} · ${ch.km} ${t('km')} · ${ch.type}</p></div>
- ${routeMap(0,ch.name.split(' ').slice(0,2).join(' '))}
- <div class="card"><div class="row between"><div><div class="eyebrow">${t('totalStop')}</div><div class="display" style="font-weight:800;font-size:34px;line-height:1">${total(ch)} <span style="font-size:16px">${t('min')}</span></div></div><div style="text-align:right"><div class="eyebrow">${t('estCost')}</div><div class="display" style="font-weight:800;font-size:24px">${fmtRM(costTo(ch,S.soc))}</div><div class="note">${kw.toFixed(1)} kWh × RM${ch.rate.toFixed(2)}</div></div></div>
- <div class="note" style="margin:8px 0 10px">${t('detailSub')}</div>
- <div class="grid3"><div class="stat"><div class="row" style="gap:6px;color:var(--navy)">${I.car}</div><div class="v">${ch.travel} ${t('min')}</div><div class="l">${t('travel')}</div></div><div class="stat"><div class="row" style="gap:6px;color:var(--navy)">${I.clock}</div><div class="v">${ch.wait} ${t('min')}</div><div class="l">${t('wait')}</div></div><div class="stat"><div class="row" style="gap:6px;color:var(--green-2)">${I.bolt}</div><div class="v">${ch.charge} ${t('min')}</div><div class="l">${t('chargeTo',{pct:80})}</div></div></div></div>
- <div class="card tight"><div class="eyebrow" style="margin-bottom:6px">${t('whyTitle')}</div><div class="list">${(ch.fit==='nearest'?[t('whyNear',{min:ch.charge})]:[t('why1'),t('why2'),t('why3')]).map(w=>`<div class="li"><span style="color:var(--green-2)">${I.check}</span><div class="t" style="font-weight:500">${w}</div></div>`).join('')}</div></div>
- ${ch.baysFree?`<button class="btn ghost sm" data-hold="1" ${S.hold?'disabled':''}>${I.clock}${S.hold?t('holdBayOn',{time:S.hold}):t('holdBay')}</button>`:''}
- <button class="btn primary" data-go="navigate">${I.nav}${t('navigate')}</button><div class="note" style="text-align:center;margin-top:-4px">${t('navigateSub')}</div>
- </div>`},
- navigate(){const ch=CH.find(c=>c.id===S.sel);return `${header('detail')}<div class="scroll">
- <div style="padding:2px 2px 0"><div class="eyebrow">${t('navTitle')}</div><h1 class="h big" style="margin-top:4px">${ch.name}</h1><p class="sub">${ch.addr}</p></div>
- ${routeMap(S.navProg||0.35,ch.name.split(' ').slice(0,2).join(' '))}
- <div class="grid3"><div class="stat"><div class="v">${Math.max(1,Math.round(ch.travel*(1-(S.navProg||0.35))))} ${t('min')}</div><div class="l">${t('eta')} ${addMin(Math.round(ch.travel*(1-(S.navProg||0.35))))}</div></div><div class="stat"><div class="v">${(ch.km*(1-(S.navProg||0.35))).toFixed(1)} ${t('km')}</div><div class="l">${t('travel')}</div></div><div class="stat"><div class="v">${ch.bays}</div><div class="l">${t('bays')}</div></div></div>
- ${S.hold?`<div class="card tight row"><span class="icw mint">${I.clock}</span><div style="font-weight:600">${t('holdBayOn',{time:S.hold})}</div></div>`:''}
+ onway(){const ch=CH.find(c=>c.id===S.sel);const p=S.navProg;const eta=Math.max(1,Math.round(ch.travel*(1-p)));return `${header('options')}<div class="scroll">
+ <div style="padding:2px 2px 0"><div class="eyebrow">${t('onWayTitle')}</div><h1 class="h big" style="margin-top:4px">${brandName(ch.name)}</h1><p class="sub">${ch.addr}</p></div>
+ <div class="grid2"><div class="stat"><div class="v">${eta} ${t('min')}</div><div class="l">${t('eta')} ${addMin(eta)}</div></div><div class="stat"><div class="v">${(ch.km*(1-p)).toFixed(1)} ${t('km')}</div><div class="l">${t('travel')}</div></div></div>
+ <div class="bay"><span class="icw mint">${I.plug}</span><div style="flex:1"><div style="font-weight:700;font-family:var(--display)">${t('bayNow')}: ${ch.free}/${ch.bays} ${t('free')}</div><div class="note">${t('updated')}</div></div>${bayDots(ch)}</div>
+ <div class="card tight row"><span class="icw info">${I.nav}</span><div class="note" style="color:var(--ink-2)">${t('mapsSub')}</div><button class="btn ghost sm" data-sheet="maps" data-pick="${ch.id}" style="width:auto;min-height:40px;padding:0 12px;font-size:13px">${t('go')}</button></div>
  <div style="margin-top:auto"></div>
  <button class="btn primary" data-go="arrived">${I.check}${t('arrived')}</button>
- <button class="btn ghost sm" data-occ="1">${I.warn}${t('occupiedBtn')}</button>
+ <button class="btn white" data-sheet="occ">${I.warn}${t('bayTaken')}</button><div class="note" style="text-align:center;margin-top:-4px">${t('bayTakenSub')}</div>
  </div>`},
  arrived(){const ch=CH.find(c=>c.id===S.sel);return `${header()}<div class="scroll">
- <div class="card" style="text-align:center;padding-top:24px"><span class="icw mint" style="width:84px;height:84px;border-radius:26px;margin:0 auto">${I.plug.replace('class="ic"','class="ic" style="width:44px;height:44px"')}</span><h1 class="h big" style="margin-top:14px">${t('plugTitle')}</h1><p class="sub">${t('plugSub')}</p>
- <div class="row" style="justify-content:center;gap:8px;margin-top:14px"><span class="pill mint">${ch.name}</span><span class="pill info">${t('bay',{n:S.sel==='c2'?'B1':'A2'})}</span></div></div>
- <div class="card tight"><div class="list"><div class="li"><span class="icw info">${I.bolt}</span><div style="flex:1"><div class="t">${ch.type}</div><div class="s">CCS2 · ${t('chargeTo',{pct:80})}</div></div></div><div class="li"><span class="icw info">${I.coins}</span><div style="flex:1"><div class="t">RM ${ch.rate.toFixed(2)}/kWh</div><div class="s">Pos Malaysia fixed rate · billed to fleet</div></div></div></div></div>
+ <div class="card" style="text-align:center;padding-top:24px"><span class="icw mint" style="width:84px;height:84px;border-radius:26px;margin:0 auto">${I.plug.replace('class="ic"','class="ic" style="width:44px;height:44px"')}</span><h1 class="h" style="margin-top:14px;font-size:24px">${t('plugTitle')}</h1><p class="sub">${t('plugSub')}</p>
+ <div class="row" style="justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap"><span class="pill mint"><span>${brandName(ch.name)}</span></span><span class="pill info">${t('bay',{n:S.sel==='c2'?'B1':'A2'})}</span><span class="pill good">${I.check}${t('payNothing')}</span></div></div>
+ <div class="card tight"><div class="list"><div class="li"><span class="icw info">${I.bolt}</span><div style="flex:1"><div class="t">${ch.type}</div><div class="s">CCS2 · ${t('chargeTo',{pct:target()})} · ${chargeMin(ch,S.soc)} ${t('min')}</div></div></div><div class="li"><span class="icw info">${I.users}</span><div style="flex:1"><div class="t">${t('fleetAcct')}</div><div class="s">${S.plate}</div></div></div></div></div>
  <div style="margin-top:auto"></div>
  <button class="btn primary" data-startcharge="1">${I.bolt}${t('startCharge')}</button>
- <button class="btn ghost sm" data-occ="1">${I.warn}${t('occupiedBtn')}</button>
+ <button class="fold" data-sheet="fail">${t('didntStart')}</button>
  </div>`},
- charging(){const c=S.charging;const ch=CH.find(x=>x.id===S.sel);const left=Math.max(0,Math.round((80-S.soc)/(80-c.from)*ch.charge));const kwh=kwhNeeded(c.from,S.soc);return `${header()}<div class="scroll">
- <div class="card" style="text-align:center;padding-top:20px"><div class="eyebrow">${t('chargingTitle')} · ${ch.name}</div><div class="ring" style="margin-top:10px">${ring(S.soc,188,14,'var(--green)')}<div class="c"><div class="pct">${S.soc}%</div><div class="km">${t('target',{pct:80})}</div></div></div>
- <div class="grid2" style="margin-top:14px"><div class="stat" style="text-align:left"><div class="v">${t('remaining',{min:left})}</div><div class="l">${t('leaveBy')} <b>${c.leaveBy}</b></div></div><div class="stat" style="text-align:left"><div class="v">${fmtRM(kwh*ch.rate)}</div><div class="l">${t('costSoFar')} · ${t('kwh',{kwh:kwh.toFixed(1)})}</div></div></div></div>
- <div class="card tight row"><span class="icw warn">${I.clock}</span><div class="note" style="color:var(--ink-2)">${t('unplugWarn')}</div></div>
+ charging(){const c=S.charging;const ch=CH.find(x=>x.id===S.sel);const tg=target();const left=Math.max(0,Math.round((tg-S.soc)/Math.max(1,tg-c.from)*chargeMin(ch,c.from)));const kwh=kwhNeeded(c.from,S.soc);return `${header()}<div class="scroll">
+ <div class="card" style="text-align:center;padding-top:20px"><div class="eyebrow">${t('chargingTitle')} · ${ch.name}</div><div class="ring" style="margin-top:10px">${ring(S.soc,'var(--green)')}<div class="c"><div class="pct">${S.soc}%</div><div class="km">${t('target',{pct:tg})}</div></div></div>
+ <div class="grid2" style="margin-top:14px"><div class="stat" style="text-align:left"><div class="v">${t('remaining',{min:left})}</div><div class="l">${t('leaveAt')} <b>${c.leaveAt}</b></div></div><div class="stat" style="text-align:left"><div class="v">${kwh.toFixed(1)} kWh</div><div class="l">${t('received',{kwh:''}).trim()}</div></div></div></div>
+ <div class="card tight row"><span class="icw warn">${I.bell}</span><div class="note" style="color:var(--ink-2)">${t('buzzNote',{pct:tg})}</div></div>
  <div style="margin-top:auto"></div>
- <button class="btn danger sm" data-stopcharge="1">${t('stop')}</button>
+ <button class="btn ghost sm" data-stopcharge="1">${t('stopEarly')}</button>
  </div>`},
  done(){const st=S.stops[S.stops.length-1];return `${header()}<div class="scroll">
- <div class="card" style="text-align:center;padding-top:26px;border-color:var(--green)"><span class="icw mint" style="width:84px;height:84px;border-radius:50%;margin:0 auto;background:var(--green);color:#fff">${I.check.replace('class="ic"','class="ic" style="width:44px;height:44px"')}</span><h1 class="h big" style="margin-top:14px">${t('doneTitle')}</h1><p class="sub">${t('doneSub')}</p></div>
- <div class="card tight"><div class="eyebrow" style="margin-bottom:6px">${t('session')} · ${st.name}</div><div class="grid3"><div class="stat"><div class="v">${st.kwh.toFixed(1)}</div><div class="l">${t('energy')} (kWh)</div></div><div class="stat"><div class="v">RM ${st.cost.toFixed(0)}</div><div class="l">${t('cost')}</div></div><div class="stat"><div class="v">${st.mins} ${t('min')}</div><div class="l">${t('time')}</div></div></div></div>
+ <div class="card" style="text-align:center;padding-top:26px;border-color:var(--green)"><span class="icw" style="width:84px;height:84px;border-radius:50%;margin:0 auto;background:var(--green);color:#fff">${I.check.replace('class="ic"','class="ic" style="width:44px;height:44px"')}</span><h1 class="h big" style="margin-top:14px">${t('doneTitle')}</h1><p class="sub">${t('doneSub')}</p></div>
+ <div class="card tight"><div class="eyebrow" style="margin-bottom:6px">${t('session')} · ${st.name}</div><div class="grid2"><div class="stat"><div class="v">${st.kwh.toFixed(1)} kWh</div><div class="l">${t('energy')}</div></div><div class="stat"><div class="v">${st.mins} ${t('min')}</div><div class="l">${t('time')}</div></div></div></div>
  <div style="margin-top:auto"></div>
- <button class="btn primary" data-go="home">${I.home}${t('backRoute')}</button>
+ <button class="btn primary" data-go="home">${I.check}${t('done')}</button>
  </div>`},
- guide(){const g=[['g1',I.car],['g2',I.batt],['g3',I.warn],['g4',I.list],['g5',I.nav],['g6',I.plug],['g7',I.check]];const i=S.guideStep;const [k,ic]=g[i];return `${header()}<div class="scroll">
+ guide(){const g=[['g1',I.car],['g2',I.batt],['g3',I.bell],['g4',I.plug],['g5',I.warn],['g6',I.check]];const i=S.guideStep;const [k,ic]=g[i];return `${header()}<div class="scroll">
  <div style="padding:2px 2px 0"><div class="eyebrow">${t('guideTitle')}</div><p class="sub" style="margin-top:2px">${t('guideSub')}</p></div>
- <div class="card" style="text-align:center;padding:28px 18px;flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px"><div class="guide-ic">${ic.replace('class="ic"','')}</div><div class="row" style="justify-content:center;gap:10px"><span class="num">${i+1}</span><h2 class="h" style="font-size:24px">${t(k+'t')}</h2></div><p class="sub" style="font-size:16px;max-width:30ch;margin:0 auto">${t(k+'s')}</p><div class="steps">${g.map((_,j)=>`<i class="${j===i?'on':''}"></i>`).join('')}</div></div>
- <div class="grid2"><button class="btn ghost sm" data-gstep="-1" ${i===0?'disabled style="opacity:.4"':''}>${t('prev')}</button>${i<6?`<button class="btn navy sm" data-gstep="1">${t('next')}</button>`:`<button class="btn primary sm" data-go="home">${t('done')}</button>`}</div>
+ <div class="card" style="text-align:center;padding:24px 18px;flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px"><div class="guide-ic">${ic.replace('class="ic"','')}</div><div class="row" style="justify-content:center;gap:10px"><span class="num">${i+1}</span><h2 class="h" style="font-size:24px">${t(k+'t')}</h2></div><p class="sub" style="font-size:16px;max-width:30ch;margin:0 auto">${t(k+'s')}</p><div class="steps">${g.map((_,j)=>`<i class="${j===i?'on':''}"></i>`).join('')}</div></div>
+ <div class="note" style="text-align:center">${t('needHelp',{phone:SUPPORT})}</div>
+ <div class="grid2"><button class="btn ghost sm" data-gstep="-1" ${i===0?'disabled':''}>${t('prev')}</button>${i<5?`<button class="btn navy sm" data-gstep="1">${t('next')}</button>`:`<button class="btn primary sm" data-go="home">${t('gotit')}</button>`}</div>
  </div>${tabbar('guide')}`},
- shift(){const spent=S.stops.reduce((a,s)=>a+s.cost,0);const saved=S.stops.length*19;return `${header()}<div class="scroll">
+ shift(){const saved=S.stops.length*19;return `${header()}<div class="scroll">
  <div style="padding:2px 2px 0"><h1 class="h big">${t('shiftTitle')}</h1><p class="sub">${t('shiftSub',{depot:DEPOT,time:'17:00'})}</p></div>
- <div class="grid2"><div class="stat"><div class="v">${S.km} ${t('km')}</div><div class="l">${t('kmDriven')}</div></div><div class="stat"><div class="v">${S.runsDone}/6</div><div class="l">${t('runsLbl')}</div></div><div class="stat"><div class="v">${S.stops.length}</div><div class="l">${t('stops')}</div></div><div class="stat"><div class="v">RM ${spent.toFixed(0)}</div><div class="l">${t('spent')}</div></div></div>
+ <div class="grid2"><div class="stat"><div class="v">${S.km} ${t('km')}</div><div class="l">${t('kmDriven')}</div></div><div class="stat"><div class="v">${S.runsDone}/6</div><div class="l">${t('runsLbl')}</div></div><div class="stat"><div class="v">${S.stops.length}</div><div class="l">${t('stops')}</div></div><div class="stat"><div class="v">${S.busy}</div><div class="l">${t('busy')}</div></div></div>
  <div class="card tight row"><span class="icw mint">${I.clock}</span><div><div style="font-weight:700;font-family:var(--display)">${saved} ${t('min')}</div><div class="note">${t('saved')}</div></div></div>
- <div class="card tight"><div class="eyebrow" style="margin-bottom:4px">${t('hist')}</div><div class="timeline">${S.stops.length?S.stops.map(s=>`<div class="tl"><span class="dot"></span><div><div style="font-weight:600">${s.name}</div><div class="note">${s.kwh.toFixed(1)} kWh · ${s.mins} ${t('min')}</div></div><div style="font-weight:700">RM ${s.cost.toFixed(0)}</div></div>`).join(''):`<div class="tl"><span class="dot muted"></span><div class="note">—</div><div></div></div>`}</div></div>
+ <div class="card tight"><div class="eyebrow" style="margin-bottom:4px">${t('hist')}</div><div class="timeline">${S.stops.length?S.stops.map(s=>`<div class="tl"><span class="dot"></span><div><div style="font-weight:600">${s.name}</div><div class="note">${s.kwh.toFixed(1)} kWh · ${s.mins} ${t('min')}</div></div><div></div></div>`).join(''):`<div class="tl"><span class="dot muted"></span><div class="note">0</div><div></div></div>`}</div></div>
  <div style="margin-top:auto"></div>
  <button class="btn ghost sm" data-reset="1">${I.flag}${t('endShift')}</button>
  </div>${tabbar('shift')}`}
 };
-function sheetOcc(){const backup=CH[1];return `<div class="scrim" data-close="1"></div><div class="sheet"><div class="grab"></div><div class="row"><span class="icw bad">${I.warn}</span><div><h2 class="h" style="font-size:20px">${t('occTitle')}</h2><p class="sub">${t('occSub')}</p></div></div>
-<button class="opt rec" data-backup="${backup.id}"><div class="row between"><div class="row"><span class="rank one">02</span><span class="pill good">${t('recommended')}</span></div><span class="note">${backup.km} ${t('km')}</span></div><div><div class="name">${brandName(backup.name)}</div><div class="addr">${backup.type} · ${backup.bays} ${t('bays').toLowerCase()}</div></div></button>
-<button class="btn primary" data-backup="${backup.id}">${I.nav}${t('goBackup',{name:backup.name.split(' ').slice(0,2).join(' ')})}</button>
-<button class="btn ghost sm" data-close="1">${t('stayWait',{min:15})}</button></div>`}
-function render(){const app=$('#app');app.innerHTML=(V[S.screen]||V.home)()+(S.sheet==='occ'?sheetOcc():'')+(S.toast?`<div class="toast">${I.check}${S.toast}</div>`:'');
+const SH={
+ help(){return `<div class="row"><span class="icw info">${I.help}</span><div><h2 class="h" style="font-size:20px">${t('helpTitle')}</h2><p class="sub">${t('helpSub')}</p></div></div>
+ <div class="list"><button class="li" data-act="call"><span class="icw mint">${I.phone}</span><div style="flex:1"><div class="t">${t('helpCall')}</div><div class="s">${SUPPORT}</div></div>${I.chev}</button><button class="li" data-act="wa"><span class="icw mint">${I.chat}</span><div style="flex:1"><div class="t">${t('helpWa')}</div><div class="s">+60 12-000 0000</div></div>${I.chev}</button><button class="li" data-act="fault"><span class="icw warn">${I.wrench}</span><div style="flex:1"><div class="t">${t('helpFault')}</div><div class="s">${S.sel?CH.find(c=>c.id===S.sel).name:'chargEV'}</div></div>${I.chev}</button><button class="li" data-act="pos"><span class="icw info">${I.users}</span><div style="flex:1"><div class="t">${t('helpPos')}</div><div class="s">${POS_OPS}</div></div>${I.chev}</button></div>
+ <button class="btn ghost sm" data-close="1">${t('helpOk')}</button>`},
+ maps(){const ch=CH.find(c=>c.id===S.sel);return `<div class="row"><span class="icw mint">${I.nav}</span><div><h2 class="h" style="font-size:20px">${t('mapsTitle')}</h2><p class="sub"><span>${brandName(ch.name)}</span> · ${ch.km} ${t('km')}</p></div></div>
+ <a class="mapsbtn" href="https://waze.com/ul?ll=${ch.lat},${ch.lng}&navigate=yes" target="_blank" rel="noopener" data-maps="Waze"><span class="ic2" style="background:#33ccff">W</span><span>${t('waze')}<small>${t('goSub')}</small></span></a>
+ <a class="mapsbtn" href="https://www.google.com/maps/dir/?api=1&destination=${ch.lat},${ch.lng}" target="_blank" rel="noopener" data-maps="Google Maps"><span class="ic2" style="background:#34a853">G</span><span>${t('gmaps')}<small>${t('goSub')}</small></span></a>
+ <div class="note" style="text-align:center">${t('mapsSub')}</div>
+ <button class="btn primary" data-onway="1">${I.check}${t('imOnWay')}</button>`},
+ occ(){const cur=CH.find(c=>c.id===S.sel);const next=ranked().list.find(c=>c.id!==S.sel)||CH[1];return `<div class="row"><span class="icw bad">${I.warn}</span><div><h2 class="h" style="font-size:20px">${t('occTitle',{name:shortName(cur.name)})}</h2><p class="sub">${t('occSub')}</p></div></div>
+ <div class="opt rec"><div class="row between"><div class="row"><span class="rank one">02</span><span class="pill good">${t('recommended')}</span></div><span class="pill mint">${bayDots(next)} ${next.free}/${next.bays} ${t('free')}</span></div><div><div class="name">${brandName(next.name)}</div><div class="addr">${next.type} · ${next.km} ${t('km')} · ${total(next)} ${t('min')} ${t('totalStop').toLowerCase()}</div></div></div>
+ <button class="btn primary" data-backup="${next.id}">${I.nav}${t('goNext',{name:shortName(next.name)})}</button>
+ <button class="btn ghost sm" data-close="1">${t('stayWait',{min:15})}</button>`},
+ fail(){return `<div class="row"><span class="icw warn">${I.warn}</span><div><h2 class="h" style="font-size:20px">${t('failTitle')}</h2><p class="sub">${t('failSub')}</p></div></div>
+ <button class="btn primary" data-act="retry">${I.bolt}${t('tryAgain')}</button>
+ <button class="btn white sm" data-act="chargev">${t('openChargev')}</button>
+ <div class="grid2"><button class="btn ghost sm" data-act="fault">${I.wrench}${t('reportFault')}</button><button class="btn ghost sm" data-act="call">${I.phone}${t('callSupport')}</button></div>`}
+};
+function render(){const app=$('#app');app.innerHTML=(V[S.screen]||V.home)()+(S.sheet?`<div class="scrim" data-close="1"></div><div class="sheet"><div class="grab"></div>${SH[S.sheet]()}</div>`:'')+(S.toast?`<div class="toast">${I.check}${S.toast}</div>`:'');
  $('#socLbl').textContent=S.soc+'%';$('#socRange').value=S.soc;$('#demo').classList.toggle('open',S.demoOpen);}
-function startCharge(){const ch=CH.find(c=>c.id===S.sel);S.charging={from:S.soc,leaveBy:addMin(ch.charge+10),start:Date.now()};go('charging');clearInterval(timers.charge);timers.charge=setInterval(()=>{if(S.screen!=='charging')return;S.soc=Math.min(80,S.soc+1);if(S.soc>=80)finishCharge();else render();},700)}
-function finishCharge(){clearInterval(timers.charge);const ch=CH.find(c=>c.id===S.sel);const kwh=kwhNeeded(S.charging.from,80);S.soc=80;S.stops.push({name:ch.name,kwh,cost:kwh*ch.rate,mins:total(ch)});S.charging=null;S.hold=null;S.runsDone=Math.min(6,S.runsDone+1);go('done')}
+function startCharge(){const ch=CH.find(c=>c.id===S.sel);S.charging={from:S.soc,leaveAt:addMin(chargeMin(ch,S.soc))};go('charging');clearInterval(timers.charge);timers.charge=setInterval(()=>{if(S.screen!=='charging')return;S.soc=Math.min(target(),S.soc+1);if(S.soc>=target())finishCharge();else render();},700)}
+function finishCharge(){clearInterval(timers.charge);const ch=CH.find(c=>c.id===S.sel);const kwh=kwhNeeded(S.charging.from,S.soc);S.stops.push({name:ch.name,kwh,mins:total(ch)});S.charging=null;S.runsDone=Math.min(6,S.runsDone+1);S.failCount=0;go('done')}
 document.addEventListener('click',e=>{
- const b=e.target.closest('[data-go],[data-lang],[data-plate],[data-start],[data-sel],[data-hold],[data-occ],[data-close],[data-backup],[data-startcharge],[data-stopcharge],[data-gstep],[data-reset],[data-dismiss-msg],[data-alert]');if(!b)return;const d=b.dataset;
+ const m=e.target.closest('[data-maps]');if(m){S.navProg=0.1;S.sheet=null;go('onway');toast(t('toastMaps',{app:m.dataset.maps}));return}
+ const b=e.target.closest('[data-go],[data-lang],[data-plate],[data-start],[data-sheet],[data-close],[data-backup],[data-startcharge],[data-stopcharge],[data-gstep],[data-reset],[data-dismiss-msg],[data-togglealt],[data-onway],[data-act]');if(!b)return;const d=b.dataset;
  if(d.lang){S.lang=d.lang;render();return}
  if(d.plate){S.plate=d.plate;render();return}
  if(d.start!==undefined){S.plate=($('#plateIn').value||S.plate).toUpperCase();if(!S.plate)return;go('home');toast(t('toastShift'));return}
- if(d.sel){S.sel=d.sel;go('detail');return}
- if(d.hold!==undefined){S.hold=addMin(15);render();toast(t('toastHold'));return}
- if(d.occ!==undefined){S.sheet='occ';render();setTimeout(()=>toast(t('toastFleet')),300);return}
+ if(d.sheet){if(d.pick)S.sel=d.pick;S.sheet=d.sheet;render();if(d.sheet==='occ'){S.busy++;setTimeout(()=>toast(t('toastFleet')),250)}return}
+ if(d.onway!==undefined){S.navProg=0.1;go('onway');return}
  if(d.close!==undefined){S.sheet=null;render();return}
- if(d.backup){S.sel=d.backup;S.hold=addMin(15);S.navProg=0.1;go('navigate');toast(t('toastRoute'));return}
- if(d.startcharge!==undefined){startCharge();return}
+ if(d.backup){S.sel=d.backup;S.sheet='maps';render();toast(t('toastRoute'));return}
+ if(d.startcharge!==undefined){if(S.failPending){S.failPending=false;S.sheet='fail';render();return}startCharge();return}
  if(d.stopcharge!==undefined){finishCharge();return}
- if(d.gstep){S.guideStep=Math.max(0,Math.min(6,S.guideStep+ +d.gstep));render();return}
+ if(d.gstep){S.guideStep=Math.max(0,Math.min(5,S.guideStep+ +d.gstep));render();return}
  if(d.reset!==undefined){const lang=S.lang;S=S0();S.lang=lang;render();return}
  if(d.dismissMsg!==undefined){S.fleetMsg=false;render();return}
- if(d.go){if(d.go==='navigate')S.navProg=0.35;go(d.go);return}
+ if(d.togglealt!==undefined){S.showAlt=!S.showAlt;render();return}
+ if(d.act){const a=d.act;S.sheet=null;
+  if(a==='call')toast(t('toastCall',{n:SUPPORT}));else if(a==='wa')toast(t('toastWa',{n:'+60 12-000 0000'}));else if(a==='pos')toast(t('toastCall',{n:POS_OPS}));
+  else if(a==='fault')toast(t('toastFault'));else if(a==='chargev')toast(t('toastChargev'));
+  else if(a==='retry'){S.failCount++;if(S.failCount>=2){toast(t('toastFleet'))}else{toast(t('toastRetry'));setTimeout(()=>{if(S.screen==='arrived')startCharge()},900)}}
+  render();return}
+ if(d.go){if(d.go==='options')S.showAlt=false;go(d.go);return}
 });
-document.addEventListener('input',e=>{if(e.target.id==='plateIn'){S.plate=e.target.value.toUpperCase();const btn=document.querySelector('[data-start]');if(btn){btn.disabled=!S.plate;btn.style.opacity=S.plate?'1':'.5'}}
+document.addEventListener('input',e=>{if(e.target.id==='plateIn'){S.plate=e.target.value.toUpperCase();const btn=document.querySelector('[data-start]');if(btn)btn.disabled=!S.plate}
  if(e.target.id==='socRange'){S.soc=+e.target.value;render()}});
-$('#dAlert').addEventListener('click',()=>{S.soc=28;S.hold=null;S.sel=null;S.sheet=null;if(!S.plate)S.plate='WVL 2301';go('lock')});
-$('#dOcc').addEventListener('click',()=>{if(!S.sel)S.sel='c1';if(!S.plate)S.plate='WVL 2301';if(S.soc>TH)S.soc=28;S.navProg=0.9;go('navigate');S.sheet='occ';render();setTimeout(()=>toast(t('toastFleet')),300)});
-$('#dDone').addEventListener('click',()=>{if(!S.sel)S.sel='c1';if(!S.plate)S.plate='WVL 2301';if(!S.charging)S.charging={from:S.soc<80?S.soc:28,leaveBy:addMin(0)};finishCharge()});
+const ensurePlate=()=>{if(!S.plate)S.plate='WVL 2301'};
+$('#dAlert').addEventListener('click',()=>{ensurePlate();S.soc=28;S.sel=null;S.sheet=null;S.showAlt=false;go('lock')});
+$('#dOcc').addEventListener('click',()=>{ensurePlate();if(!S.sel)S.sel='c1';if(S.soc>TH)S.soc=28;S.navProg=0.9;S.busy++;go('onway');S.sheet='occ';render();setTimeout(()=>toast(t('toastFleet')),250)});
+$('#dFail').addEventListener('click',()=>{ensurePlate();if(!S.sel)S.sel='c1';if(S.soc>TH)S.soc=28;S.failPending=true;go('arrived');S.sheet='fail';render()});
+$('#dDone').addEventListener('click',()=>{ensurePlate();if(!S.sel)S.sel='c1';if(!S.charging)S.charging={from:S.soc<target()?S.soc:28,leaveAt:addMin(0)};S.soc=Math.max(S.soc,target());finishCharge()});
+$('#dCrit').addEventListener('click',()=>{ensurePlate();S.soc=12;S.sel=null;go('lock')});
 $('#dReset').addEventListener('click',()=>{const lang=S.lang;S=S0();S.lang=lang;render()});
 $('#demoFab').addEventListener('click',()=>{S.demoOpen=!S.demoOpen;render()});
-function tick(){const d=new Date();$('#clock').textContent=d.toTimeString().slice(0,5);if(S.screen==='navigate'&&S.navProg<0.92){S.navProg=Math.min(0.92,(S.navProg||0.35)+0.03);render()}}
+function tick(){$('#clock').textContent=new Date().toTimeString().slice(0,5);if(S.screen==='onway'&&S.navProg<0.92&&!S.sheet){S.navProg=Math.min(0.92,S.navProg+0.04);render()}}
 setInterval(tick,2000);tick();
 setTimeout(()=>{if(S.screen==='home'&&S.soc>TH){S.fleetMsg=true;render()}},9000);
 render();

@@ -10,12 +10,12 @@
 <style>
 /* Layout: fixed left rail + sticky top bar; content is a 12-col grid of panels, collapsing to one column under 900px. */
 :root{
-  --navy:#17145a; --navy-2:#2a2680; --green:#17a874; --green-2:#0e8c5f; --mint:#dff5ec; --mint-2:#b9ead6;
+  --navy:#1b1464; --navy-2:#2a2680; --green:#1db07e; --green-2:#128c62; --mint:#dff5ec; --mint-2:#b9ead6;
   --bg:#ffffff; --panel:#ffffff; --panel-2:#f4f6fa; --ink:#15173a; --ink-2:#4f5478; --ink-3:#8a8fae; --line:#e0e4ee; --line-2:#cfd4e2;
   --good:#17a874; --warn:#e08a00; --bad:#d93d3d; --good-bg:#e4f7ef; --warn-bg:#fff4e0; --bad-bg:#fdeaea; --info-bg:#e8edff;
   --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --rail:#ffffff; --rail-ink:#4f5478; --rail-on:#17a874; --shadow-s:0 2px 12px rgba(23,20,90,.06);
   --shadow:0 10px 30px rgba(23,20,90,.10);
-  --display:"Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif; --body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --display:"Avenir Next","Avenir","Plus Jakarta Sans",ui-sans-serif,system-ui,sans-serif; --body:"Avenir Next","Avenir","IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -195,7 +195,7 @@ select.search{padding-right:26px}
   <button class="nav" data-view="vehicles">ICON_CAR Vehicles</button>
   <div class="sec">Charging</div>
   <button class="nav" data-view="sessions">ICON_BOLT Sessions</button>
-  <button class="nav" data-view="costs">ICON_COINS Costs</button>
+  <button class="nav" data-view="costs">ICON_COINS Cost &amp; reports</button>
   <button class="nav" data-view="depots">ICON_DEPOT Depots &amp; chargers</button>
   <div class="sec">Setup</div>
   <button class="nav" data-view="policy">ICON_SLIDERS Fleet policy</button>
@@ -250,9 +250,9 @@ const DEPOTS=[
  {id:'d2',name:'Pusat Mel Nasional (Dayabumi)',short:'KL Dayabumi',x:600,y:290,vans:11,primary:'chargEV KL Sentral',pkm:1.6,backup:'chargEV Bangsar South',bkm:4.1,cover:'good'},
  {id:'d3',name:'Pos Petaling Jaya',short:'Petaling Jaya',x:470,y:340,vans:7,primary:'chargEV Jaya One',pkm:1.9,backup:'TNB Electron PJ Seksyen 14',bkm:1.2,cover:'good'},
  {id:'d4',name:'Pos Subang Jaya',short:'Subang Jaya',x:410,y:410,vans:6,primary:'chargEV Sunway Pyramid',pkm:3.3,backup:'chargEV Subang Parade',bkm:2.7,cover:'good'},
- {id:'d5',name:'Pos Klang',short:'Klang',x:160,y:385,vans:5,primary:'chargEV Klang Parade',pkm:2.1,backup:'—',bkm:null,cover:'partial'},
+ {id:'d5',name:'Pos Klang',short:'Klang',x:160,y:385,vans:5,primary:'chargEV Klang Parade',pkm:2.1,backup:'none',bkm:null,cover:'partial'},
  {id:'d6',name:'Pos Puchong',short:'Puchong',x:470,y:470,vans:4,primary:'chargEV IOI Mall Puchong',pkm:2.8,backup:'TNB Electron Bandar Puteri',bkm:4.6,cover:'good'},
- {id:'d7',name:'Pos Kajang',short:'Kajang',x:700,y:500,vans:4,primary:'TNB Electron Kajang',pkm:3.5,backup:'—',bkm:null,cover:'gap'},
+ {id:'d7',name:'Pos Kajang',short:'Kajang',x:700,y:500,vans:4,primary:'TNB Electron Kajang',pkm:3.5,backup:'none',bkm:null,cover:'gap'},
  {id:'d8',name:'Pos Cheras',short:'Cheras',x:710,y:380,vans:4,primary:'chargEV Cheras Leisure Mall',pkm:2.2,backup:'TNB Electron Taman Connaught',bkm:3.0,cover:'good'}
 ];
 const CHARGERS=[
@@ -278,9 +278,11 @@ V[9].st='low';V[9].soc=27;V[9].routing=false;V[9].since=14;
 V[17].st='idle';V[17].soc=80;V[17].since=18;V[17].charger='chargEV Jaya One';
 V[21].st='charging';V[21].soc=41;V[21].routing=true;
 V[30].st='route';V[30].soc=33;V[30].routing=false;
-V[35].offline=true;V[35].st='route';
+V[35].st='route';V[35].soc=12;V[35].routing=false;V[35].since=4;
+V[12].chargeFail=2;V[12].failAt='chargEV KL Sentral';V[12].st='route';V[12].soc=38;
+V.forEach(v=>{v.retSince=Math.round(rnd()*35)});V[30].retSince=26;
 V[41].st='low';V[41].soc=28;V[41].routing=true;
-const POLICY={th:30,ret:40,retTime:'17:00',grace:10,idle:10,priority:'balanced',nets:['chargEV','TNB Electron','Others'],autoCharge:true,rate:1.20,chan:{whatsapp:true,sms:false,email:true,portal:true},tag:false};
+const POLICY={th:30,ret:40,retTime:'17:00',grace:15,idle:15,retGrace:20,priority:'balanced',nets:['chargEV','TNB Electron','Others'],autoCharge:true,rate:1.20,chan:{whatsapp:true,sms:false,email:true,portal:true},tag:false};
 const SESSIONS=[
  ['WVL 2305','chargEV Jaya One','chargEV','DC 60 kW','08:42','09:14',31.2,1.20,0,32],
  ['WVL 2311','chargEV KL Sentral','chargEV','DC 50 kW','08:10','08:48',27.6,1.20,6,38],
@@ -298,12 +300,12 @@ const depot=id=>DEPOTS.find(d=>d.id===id);
 const range=soc=>Math.round(soc/100*60*4.2);
 const projRet=v=>v.st==="charging"?Math.min(80,v.soc+20):Math.max(0,v.soc-8);
 function alerts(){const a=[];V.forEach(v=>{
- if(v.offline)a.push({id:'off-'+v.id,sev:'warn',v,rule:'Vehicle offline',t:`${v.plate} has not reported for 25 min`,s:`Last seen near ${depot(v.depot).short}. Telematics or app not connected.`,when:'25 min'});
- if(v.soc<POLICY.th&&!v.routing&&v.st!=='charging'&&v.st!=='depot')a.push({id:'low-'+v.id,sev:'bad',v,rule:'Low battery, no action',t:`${v.plate} at ${v.soc}% and not heading to a charger`,s:`Below ${POLICY.th}% for ${v.since} min with no route started. Range left ${range(v.soc)} km.`,when:v.since+' min'});
- if(v.st==='idle'&&v.since>POLICY.idle)a.push({id:'idle-'+v.id,sev:'warn',v,rule:'Blocking a bay',t:`${v.plate} still parked at ${v.charger} after charging`,s:`Charge finished ${v.since} min ago. Bay is unavailable to others.`,when:v.since+' min'});
- if(!v.offline&&v.st!=='charging'&&v.st!=='depot'&&projRet(v)<POLICY.ret&&v.soc>=POLICY.th)a.push({id:'ret-'+v.id,sev:'warn',v,rule:'Return-to-depot risk',t:`${v.plate} projected ${projRet(v)}% back at depot`,s:`Fleet rule is at least ${POLICY.ret}% by ${POLICY.retTime}. One charging stop before the last run fixes this.`,when:'now'});
+ if(v.soc<15&&v.st!=='charging'&&v.st!=='depot')a.push({id:'crit-'+v.id,sev:'bad',v,rule:'Critical battery',t:`${v.plate} at ${v.soc}%, critical`,s:`Under 15%. Driver has the nearest charger on screen. WhatsApp and a phone call went to the duty manager.`,when:v.since+' min',acts:['nearest','call','support']});
+ else if(v.soc<POLICY.th&&!v.routing&&v.st!=='charging'&&v.st!=='depot'&&v.since>=POLICY.grace)a.push({id:'low-'+v.id,sev:'bad',v,rule:'Low battery, no action',t:`${v.plate} at ${v.soc}% and no charger route started`,s:`Under ${POLICY.th}% for ${v.since} min. Driver was prompted at ${POLICY.th}% and has not tapped Go. Range left ${range(v.soc)} km.`,when:v.since+' min',acts:['nearest','call','wa','instruct']});
+ if(v.chargeFail>=2)a.push({id:'fail-'+v.id,sev:'warn',v,rule:'Charge failed',t:`${v.plate}: session failed to start twice at ${v.failAt}`,s:`Driver was re-routed automatically after the first failure. Second failure needs a charger fault report to chargEV.`,when:'6 min',acts:['fault','call']});
+ if(v.st==='idle'&&v.since>POLICY.idle)a.push({id:'bay-'+v.id,sev:'warn',v,rule:'Bay held',t:`${v.plate} still parked at ${v.charger} after charging`,s:`Charge finished ${v.since} min ago. Driver was buzzed at target and again 10 min later. Bay is unavailable to others.`,when:v.since+' min',acts:['call']});
+ if(v.st!=='charging'&&v.st!=='depot'&&v.st!=='idle'&&projRet(v)<POLICY.ret&&v.soc>=POLICY.th&&v.retSince>POLICY.retGrace)a.push({id:'ret-'+v.id,sev:'warn',v,rule:'Return buffer at risk',t:`${v.plate} projected ${projRet(v)}% back at depot`,s:`Rule is at least ${POLICY.ret}% by ${POLICY.retTime}. Driver got the top-up prompt ${v.retSince} min ago and has not acted.`,when:v.retSince+' min',acts:['topup','call']});
 });
- a.push({id:'occ-c6',sev:'info',v:V[32],rule:'Charger occupied on arrival',t:`${V[32].plate} found all bays taken at chargEV IOI Mall Puchong`,s:'Driver was re-routed to TNB Electron Bandar Puteri (4.6 km). Arrived, charging.',when:'32 min'});
  return a.filter(x=>!S.resolved.has(x.id)).sort((p,q)=>({bad:0,warn:1,info:2})[p.sev]-({bad:0,warn:1,info:2})[q.sev]);}
 const counts=()=>({route:V.filter(v=>v.st==='route').length,charging:V.filter(v=>v.st==='charging').length,low:V.filter(v=>v.st==='low').length,depot:V.filter(v=>v.st==='depot').length,idle:V.filter(v=>v.st==='idle').length});
 const STL={route:['On route','good'],charging:['Charging','info'],low:['Low battery','bad'],depot:['At depot','muted'],idle:['Idle at charger','warn']};
@@ -333,15 +335,14 @@ overview(){const c=counts();const al=alerts();const open=al.filter(a=>!S.acked.h
 
  <div class="panel c7 flush"><div class="ph"><div><h2>Live map</h2><p class="sub">Click a van for details. Lightning markers are chargers with bays free / total.</p></div><button class="btn ghost sm" data-view="map">Full map</button></div><div style="padding:0 16px 16px">${mapSvg(false)}</div></div>
 
- <div class="panel c5"><div class="ph"><div><h2>Where the fleet charged today</h2><p class="sub">Energy by network · ${SESSIONS.length} sessions</p></div></div>
- ${netBars()}
- <div class="note" style="margin-top:12px">chargEV is the preferred network under fleet policy. TNB Electron is used where chargEV has no bay within 5 km.</div></div>
+ <div class="panel c5"><div class="ph"><div><h2>POC gates this week</h2><p class="sub">What Pos judges on day 14</p></div><button class="btn ghost sm" data-view="costs">Weekly report</button></div>
+ ${gates()}</div>
  </div>`},
 
 alerts(){const al=alerts();return `<div class="grid">
  <div class="panel c7"><div class="ph"><div><h2>Open alerts</h2><p class="sub">Sorted by severity. Acknowledge to take ownership; resolve when the van is sorted.</p></div><div class="chips"><span class="pill bad"><i></i>${al.filter(a=>a.sev==='bad').length} critical</span><span class="pill warn"><i></i>${al.filter(a=>a.sev==='warn').length} warning</span><span class="pill info"><i></i>${al.filter(a=>a.sev==='info').length} info</span></div></div>
  <div class="feed">${al.length?al.map(evRow).join(''):`<div class="help">${I.check}<div>Nothing open.</div></div>`}</div></div>
- <div class="panel c5"><div class="ph"><div><h2>How alerts work</h2><p class="sub">The portal stays quiet unless a rule fires.</p></div></div>
+ <div class="panel c5"><div class="ph"><div><h2>How alerts work</h2><p class="sub">Five rules. The portal stays quiet unless one fires; alerts also reach the duty manager by WhatsApp and email.</p></div></div>
  <div class="rules">${rulesList(true)}</div>
  <div class="help" style="margin-top:12px">${I.info}<div>Alerts also go to WhatsApp and email for the duty operations manager. Change channels under Fleet policy.</div></div></div>
  </div>`},
@@ -354,7 +355,7 @@ vehicles(){const c=counts();let list=V.filter(v=>S.filter==='all'||v.st===S.filt
  return `<div class="grid"><div class="panel c12 flush"><div class="ph"><div><h2>Vehicles</h2><p class="sub">Tracked by plate number. Driver tagging is optional in phase 1.</p></div>
  <div class="chips" style="align-items:center"><input class="search" id="q" placeholder="Search plate or depot" value="${S.q}" aria-label="Search">${['all','low','route','charging','idle','depot'].map(k=>`<button class="chip ${S.filter===k?'on':''}" data-filter="${k}">${k==='all'?'All':STL[k][0]}<span class="n">${k==='all'?V.length:c[k]}</span></button>`).join('')}</div></div>
  <div class="tbl"><table><thead><tr><th>Plate</th><th>Depot</th><th>Status</th><th style="min-width:150px">Battery</th><th>Range</th><th>Routing to charger</th><th>Return est.</th><th>Driver (optional)</th><th></th></tr></thead><tbody>
- ${list.map(v=>`<tr class="clk" data-sel="${v.id}"><td class="plate">${v.plate}</td><td>${depot(v.depot).short}</td><td>${stPill(v)}</td><td>${socCell(v)}</td><td>${range(v.soc)} km</td><td>${v.st==='charging'?'<span class="pill info">At charger</span>':v.routing?'<span class="pill good">Yes · '+v.charger.split(' ').slice(0,2).join(' ')+'</span>':v.soc<POLICY.th?'<span class="pill bad">No</span>':'<span class="note">Not needed</span>'}</td><td><span style="color:${projRet(v)<POLICY.ret?'var(--warn)':'inherit'};font-weight:${projRet(v)<POLICY.ret?700:400}">${projRet(v)}%</span></td><td>${POLICY.tag?v.driver:'<span class="note">—</span>'}</td><td><button class="btn ghost sm" data-sel="${v.id}">Open</button></td></tr>`).join('')}
+ ${list.map(v=>`<tr class="clk" data-sel="${v.id}"><td class="plate">${v.plate}</td><td>${depot(v.depot).short}</td><td>${stPill(v)}</td><td>${socCell(v)}</td><td>${range(v.soc)} km</td><td>${v.st==='charging'?'<span class="pill info">At charger</span>':v.routing?'<span class="pill good">Yes · '+v.charger.split(' ').slice(0,2).join(' ')+'</span>':v.soc<POLICY.th?'<span class="pill bad">No</span>':'<span class="note">Not needed</span>'}</td><td><span style="color:${projRet(v)<POLICY.ret?'var(--warn)':'inherit'};font-weight:${projRet(v)<POLICY.ret?700:400}">${projRet(v)}%</span></td><td>${POLICY.tag?v.driver:'<span class="note">not tagged</span>'}</td><td><button class="btn ghost sm" data-sel="${v.id}">Open</button></td></tr>`).join('')}
  ${list.length?'':'<tr><td colspan="9" class="note">No vans match.</td></tr>'}</tbody></table></div></div></div>`},
 
 sessions(){const tot=SESSIONS.reduce((s,r)=>s+r[6],0);const cost=SESSIONS.reduce((s,r)=>s+r[6]*r[7],0);const wait=SESSIONS.reduce((s,r)=>s+r[8],0);
@@ -367,31 +368,27 @@ sessions(){const tot=SESSIONS.reduce((s,r)=>s+r[6],0);const cost=SESSIONS.reduce
  <div class="tbl"><table><thead><tr><th>Plate</th><th>Charger</th><th>Network</th><th>Type</th><th>Start</th><th>End</th><th>kWh</th><th>Rate</th><th>Cost</th><th>Wait</th><th>Stop time</th></tr></thead><tbody>
  ${SESSIONS.map(r=>`<tr><td class="plate">${r[0]}</td><td>${r[1]}</td><td><span class="pill ${r[2]==='chargEV'?'good':'muted'}">${r[2]}</span></td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6].toFixed(1)}</td><td>RM ${r[7].toFixed(2)}</td><td><b>${RM(r[6]*r[7])}</b></td><td>${r[8]} min</td><td>${r[9]} min</td></tr>`).join('')}</tbody></table></div></div></div>`},
 
-costs(){const perVan=50*26;const month=perVan*V.length;const depotRate=0.52+1.90;const pubRate=POLICY.rate;const droRate=1.20+0.42;
+costs(){const perVan=50*26;const month=perVan*V.length;const byDepot=DEPOTS.map(d=>{const vans=V.filter(v=>v.depot===d.id);const kwh=vans.length*50*7;return {d,vans:vans.length,kwh,rm:kwh*POLICY.rate,busy:[1,1,1,1,0,0,1,0][DEPOTS.indexOf(d)]}});const wkKwh=byDepot.reduce((s,r)=>s+r.kwh,0),wkRm=byDepot.reduce((s,r)=>s+r.rm,0);
  return `<div class="grid">
- <div class="tile c3 half"><div class="l">Monthly energy, planned</div><div class="v">${(month/1000).toFixed(1)} <small>MWh</small></div><div class="d">50 kWh/day × 26 days × ${V.length} vans</div></div>
- <div class="tile c3 half"><div class="l">Fixed public rate</div><div class="v">RM ${pubRate.toFixed(2)}<small>/kWh</small></div><div class="d">Single rate across chargEV sites for Pos Malaysia</div></div>
- <div class="tile c3 half"><div class="l">Effective cost per kWh</div><div class="v">RM ${droRate.toFixed(2)}</div><div class="d">Energy + driver time, waiting and detour</div></div>
- <div class="tile c3 half"><div class="l">Month to date</div><div class="v">${RM(18640)}</div><div class="d">vs RM 21,300 budget · 12% under</div></div>
+ <div class="tile c3 half"><div class="l">Fixed Pos Malaysia rate</div><div class="v">RM ${POLICY.rate.toFixed(2)}<small>/kWh</small></div><div class="d">All chargEV sessions, whatever the public tariff</div></div>
+ <div class="tile c3 half"><div class="l">Month to date</div><div class="v">${RM(wkRm)}</div><div class="d">${wkKwh.toLocaleString()} kWh · one invoice line at the fixed rate</div></div>
+ <div class="tile c3 half"><div class="l">Cost per vehicle-day</div><div class="v">${RM(50*POLICY.rate)}</div><div class="d">50 kWh/day average at the fixed rate</div></div>
+ <div class="tile c3 half"><div class="l">Planned monthly energy</div><div class="v">${(month/1000).toFixed(1)} <small>MWh</small></div><div class="d">50 kWh/day × 26 days × ${V.length} vans</div></div>
 
- <div class="panel c6"><div class="ph"><div><h2>Cost per kWh: depot vs public vs drivEV</h2><p class="sub">All-in, including charger infrastructure and driver time. RM per kWh.</p></div></div>
- <div class="bar-chart">
- ${[['Depot charger (new install)',depotRate,'Energy 0.52 + infra and power upgrade 1.90'],['Public, nearest charger',3.16,'Tariff 1.60 + waiting, detour and parking'],['Public with drivEV routing',droRate,'Fixed 1.20 + reduced waiting and detour']].map(([l,v,h],i)=>`<div class="bar-row"><div><div style="font-weight:600">${l}</div><div class="note">${h}</div></div><div class="track"><i style="width:${v/3.5*100}%;background:${i===2?'var(--green)':'var(--s1)'}"></i></div><div class="n">RM ${v.toFixed(2)}</div></div>`).join('')}</div>
- <div class="help" style="margin-top:12px">${I.info}<div>Depot charging needs a power upgrade that is not available until 2027 at most branches. Public charging with routing is the only option that scales to 300 vans next year.</div></div></div>
+ <div class="panel c7 flush"><div class="ph"><div><h2>Weekly POC report</h2><p class="sub">Week 1 · 2 to 8 Nov · auto-generated one-pager</p></div><div class="chips"><button class="btn ghost sm" data-toast="Weekly report queued as PDF. Sent to Pos operations and drivEV.">Export weekly report</button><button class="btn ghost sm" data-toast="Monthly statement export queued: one line per session, per van, at RM ${POLICY.rate.toFixed(2)}/kWh.">Monthly statement</button></div></div>
+ <div style="padding:0 16px 16px">${gates()}</div></div>
 
- <div class="panel c6"><div class="ph"><div><h2>What a stop really costs</h2><p class="sub">Average public stop today, 30 kWh. Charging is only half the bill.</p></div></div>
- <div class="stack">${[['Charging',36.0,'var(--s1)'],['Waiting',9.4,'var(--s2)'],['Detour',7.1,'var(--s3)'],['Parking',2.0,'var(--s4)']].map(([l,v,c])=>`<i style="flex:${v};background:${c}" title="${l} RM ${v.toFixed(2)}"></i>`).join('')}</div>
- <div class="legend">${[['Charging',36.0,'var(--s1)'],['Waiting',9.4,'var(--s2)'],['Detour',7.1,'var(--s3)'],['Parking',2.0,'var(--s4)']].map(([l,v,c])=>`<span><i style="background:${c}"></i>${l} <b>RM ${v.toFixed(2)}</b></span>`).join('')}</div>
- <div class="kv" style="margin-top:14px"><div><div class="k">Total stop cost</div><div class="v">RM 54.50</div></div><div><div class="k">Saved vs nearest-charger habit</div><div class="v" style="color:var(--green-2)">RM 8.67</div></div></div>
- <div class="note" style="margin-top:10px">Driver time valued at RM 25/hour. Waiting and detour fall because drivEV ranks stops by total stop time, not distance.</div></div>
+ <div class="panel c5 flush"><div class="ph"><div><h2>Cost by depot</h2><p class="sub">This week · kWh and RM at the fixed rate</p></div></div>
+ <div class="tbl"><table><thead><tr><th>Depot</th><th>Vans</th><th>kWh</th><th>RM</th><th>Bay taken</th></tr></thead><tbody>${byDepot.map(r=>`<tr><td><b>${r.d.short}</b></td><td>${r.vans}</td><td>${r.kwh.toLocaleString()}</td><td>${RM(r.rm)}</td><td>${r.busy}</td></tr>`).join('')}<tr><td><b>Total</b></td><td>${V.length}</td><td><b>${byDepot.reduce((s,r)=>s+r.kwh,0).toLocaleString()}</b></td><td><b>${RM(byDepot.reduce((s,r)=>s+r.rm,0))}</b></td><td>${byDepot.reduce((s,r)=>s+r.busy,0)}</td></tr></tbody></table></div></div>
 
- <div class="panel c12"><div class="ph"><div><h2>Daily charging spend · last 14 days</h2><p class="sub">RM, all networks. Public rollout started on day 4.</p></div></div>
- <div class="sparkwrap">${spark([420,460,445,610,890,1240,1310,1180,1420,1390,1510,1480,1560,1532])}</div></div>
+ <div class="panel c12 flush"><div class="ph"><div><h2>Bay-taken log</h2><p class="sub">Every arrival at a full charger, with the reroute. Feeds the busy-bay gate (target 10% of stops or fewer).</p></div></div>
+ <div class="tbl"><table><thead><tr><th>Time</th><th>Plate</th><th>Charger (full)</th><th>Rerouted to</th><th>Extra minutes</th><th>Outcome</th></tr></thead><tbody>
+ ${[['Mon 10:42','WVL 2333','chargEV IOI Mall Puchong','TNB Electron Bandar Puteri',11,'Charged'],['Tue 14:05','WVL 2311','chargEV KL Sentral','chargEV Bangsar South',9,'Charged'],['Wed 09:18','WVL 2305','chargEV Jaya One','chargEV Sunway Pyramid',13,'Charged'],['Thu 15:50','WVL 2322','chargEV Sunway Pyramid','Waited 12 min',12,'Charged'],['Fri 11:27','WVL 2347','TNB Electron Kajang','chargEV Cheras Leisure Mall',16,'Charged']].map(r=>`<tr><td>${r[0]}</td><td class="plate">${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]} min</td><td><span class="pill good">${r[5]}</span></td></tr>`).join('')}</tbody></table></div></div>
  </div>`},
 
 depots(){return `<div class="grid"><div class="panel c12 flush"><div class="ph"><div><h2>Depot to charger mapping</h2><p class="sub">Every Pos Malaysia branch has a primary and a backup public charger within 5 km. Gaps are where chargEV should install next.</p></div><button class="btn ghost sm" data-toast="Map request sent to chargEV network planning.">Request coverage</button></div>
  <div class="tbl"><table><thead><tr><th>Branch</th><th>Vans</th><th>Primary charger</th><th>Dist.</th><th>Backup charger</th><th>Dist.</th><th>Coverage</th></tr></thead><tbody>
- ${DEPOTS.map(d=>`<tr><td><b>${d.name}</b></td><td>${d.vans}</td><td>${d.primary}</td><td>${d.pkm} km</td><td>${d.backup}</td><td>${d.bkm?d.bkm+' km':'—'}</td><td><span class="cover"><i style="background:${d.cover==='good'?'var(--good)':d.cover==='partial'?'var(--warn)':'var(--bad)'}"></i>${d.cover==='good'?'Covered':d.cover==='partial'?'No backup':'AC only, no backup'}</span></td></tr>`).join('')}</tbody></table></div></div>
+ ${DEPOTS.map(d=>`<tr><td><b>${d.name}</b></td><td>${d.vans}</td><td>${d.primary}</td><td>${d.pkm} km</td><td>${d.backup}</td><td>${d.bkm?d.bkm+' km':''}</td><td><span class="cover"><i style="background:${d.cover==='good'?'var(--good)':d.cover==='partial'?'var(--warn)':'var(--bad)'}"></i>${d.cover==='good'?'Covered':d.cover==='partial'?'No backup':'AC only, no backup'}</span></td></tr>`).join('')}</tbody></table></div></div>
  <div class="panel c12 flush"><div class="ph"><div><h2>Chargers in use by the fleet</h2><p class="sub">Live bay availability from the charging network.</p></div></div>
  <div class="tbl"><table><thead><tr><th>Charger</th><th>Network</th><th>Type</th><th>Bays</th><th>Free now</th><th>Fleet rate</th><th>Used today</th></tr></thead><tbody>
  ${CHARGERS.map((c,i)=>`<tr><td><b>${c.name}</b></td><td><span class="pill ${c.net==='chargEV'?'good':'muted'}">${c.net}</span></td><td>${c.type}</td><td>${c.bays}</td><td><span class="pill ${c.free===0?'bad':c.free===1?'warn':'good'}"><i></i>${c.free} free</span></td><td>RM ${(c.net==='chargEV'?1.20:1.00).toFixed(2)}/kWh</td><td>${[3,4,5,2,1,2,1,2,1,3][i]} sessions</td></tr>`).join('')}</tbody></table></div></div></div>`},
@@ -415,15 +412,21 @@ rules(){return `<div class="grid"><div class="panel c8"><div class="ph"><div><h2
  <div class="panel c4"><div class="ph"><div><h2>Principle</h2></div></div><p style="margin:0;font-size:14px;line-height:1.55">An operations manager should not watch 50 vans all day. The portal stays silent while vans are above the limit or already heading to a charger, and speaks only when a person has to act.</p></div></div>`}
 };
 
+function gates(){const G=[['Rounds completed in service window','96%','95% or more',true],['Sessions started first time','94%','0 rescues; failures recovered same day',true],['Busy-bay rate','7% of stops','10% or fewer',true],['Charges started from a DRO prompt','83%','80% or more',true],['Interventions per van per week','0.6','Falling week on week',true],['Minutes off route per charge','31 min','Within the agreed band',true]];return `<div class="rules">${G.map(([n,v,tg,ok])=>`<div class="rule" style="grid-template-columns:1fr auto auto"><div><div class="n">${n}</div><div class="d">Target: ${tg}</div></div><div class="display" style="font-weight:800;font-size:18px">${v}</div><span class="pill ${ok?'good':'bad'}">${ok?'On track':'Below'}</span></div>`).join('')}</div>`}
 function policyFx(){const low=V.filter(v=>v.soc<POLICY.th).length;const noact=V.filter(v=>v.soc<POLICY.th&&!v.routing&&v.st!=='charging'&&v.st!=='depot').length;const ret=V.filter(v=>projRet(v)<POLICY.ret&&v.st!=='depot').length;return `<div><div class="k">Vans under ${POLICY.th}% now</div><div class="v">${low}</div></div><div><div class="k">Would alert you</div><div class="v" style="color:${noact?'var(--bad)':'var(--green-2)'}">${noact}</div></div><div><div class="k">Return risk at ${POLICY.ret}%</div><div class="v" style="color:${ret?'var(--warn)':'var(--ink)'}">${ret}</div></div><div><div class="k">Stops added today</div><div class="v">${ret}</div></div>`}
-function rulesList(short){const R=[['bad','Low battery, no action',`Battery under ${POLICY.th}% and no route to a charger started within ${POLICY.grace} min.`],['warn','Return-to-depot risk',`Projected battery at depot under ${POLICY.ret}% by ${POLICY.retTime}.`],['warn','Blocking a bay',`Van still at the charger ${POLICY.idle} min after charging finished.`],['warn','Vehicle offline','No position or battery update for 20 min during a shift.'],['info','Charger occupied on arrival','Driver reported a full charger. Logged for network planning; driver already re-routed.'],['info','Charging complete','Driver told to unplug. Shown here only for the session log.']];
- return R.map(([s,n,d])=>`<div class="rule"><span class="sev" style="background:var(--${s==='bad'?'bad':s==='warn'?'warn':'navy'})"></span><div><div class="n">${n}</div><div class="d">${d}</div></div>${short?'':'<span class="pill good">On</span>'}</div>`).join('')}
-function evRow(a){const ack=S.acked.has(a.id);const ins=S.instructed.has(a.v.id);return `<div class="ev ${a.sev}"><span class="bar"></span><div><div class="t">${a.t}</div><div class="s">${a.s}</div><div class="acts">
- <button class="btn ghost sm" data-sel="${a.v.id}">${I.car} Open van</button>
- ${a.sev!=='info'?`<button class="btn ghost sm" data-call="${a.v.id}">${I.phone} Call ${POLICY.tag?a.v.driver:'driver'}</button>`:''}
- ${a.id.startsWith('low')?`<button class="btn navy sm" data-instruct="${a.v.id}" ${ins?'disabled':''}>${I.send} ${ins?'Instruction sent':'Send "Charge now"'}</button>`:''}
+function rulesList(short){const R=[['bad','Low battery, no action',`SOC under ${POLICY.th}% and no charger route started within ${POLICY.grace} min.`,'Manager: WhatsApp and portal','Nearest free charger, Call driver, WhatsApp driver'],['warn','Return buffer at risk',`Projected SOC at depot under ${POLICY.ret}% by ${POLICY.retTime} given the remaining stops.`,`Driver first (top-up prompt); manager if ignored ${POLICY.retGrace} min`,'Suggested 15 min top-up, Call driver'],['bad','Critical battery','SOC under 15%.','Manager: WhatsApp and phone call','Nearest charger, Call driver, drivEV support'],['warn','Charge failed','Session did not start, or stopped before 50% of target, twice.','Driver: auto reroute; manager on second failure','Charger fault report, Call driver'],['warn','Bay held',`Charge complete and van not moved within ${POLICY.idle} min.`,`Driver buzz; manager after ${POLICY.idle} min`,'Call driver']];
+ return R.map(([s,n,d,who,offer])=>`<div class="rule"><span class="sev" style="background:var(--${s==='bad'?'bad':'warn'})"></span><div><div class="n">${n}</div><div class="d">${d}</div>${short?'':`<div class="d" style="margin-top:4px"><b>Who is told:</b> ${who}<br><b>Card offers:</b> ${offer}</div>`}</div>${short?'':'<span class="pill good">On</span>'}</div>`).join('')}
+function evRow(a){const ack=S.acked.has(a.id);const ins=S.instructed.has(a.v.id);const d=depot(a.v.depot);const A={
+ nearest:`<button class="btn ghost sm" data-sel="${a.v.id}">${I.map} Nearest free charger</button>`,
+ call:`<button class="btn ghost sm" data-call="${a.v.id}">${I.phone} Call driver</button>`,
+ wa:`<button class="btn ghost sm" data-wa="${a.v.id}">${I.send} WhatsApp driver</button>`,
+ instruct:`<button class="btn navy sm" data-instruct="${a.v.id}" ${ins?'disabled':''}>${I.bolt} ${ins?'Charge now sent':'Send "Charge now"'}</button>`,
+ topup:`<button class="btn navy sm" data-instruct="${a.v.id}" ${ins?'disabled':''}>${I.bolt} ${ins?'Top-up sent':'Send 15 min top-up'}</button>`,
+ support:`<button class="btn ghost sm" data-toast="Calling drivEV support line 1-300-88-0000">${I.phone} drivEV support</button>`,
+ fault:`<button class="btn navy sm" data-toast="Charger fault report sent to chargEV for ${a.v.failAt||''}">${I.warn} Report charger fault</button>`};
+ return `<div class="ev ${a.sev}"><span class="bar"></span><div><div class="t">${a.t}</div><div class="s">${a.s}</div><div class="acts">${a.acts.map(k=>A[k]).join('')}
  ${ack?`<button class="btn primary sm" data-resolve="${a.id}">${I.check} Resolve</button>`:`<button class="btn ghost sm" data-ack="${a.id}">Acknowledge</button>`}
- </div></div><div class="when">${a.when}<br><span class="pill ${a.sev==='bad'?'bad':a.sev==='warn'?'warn':'info'}" style="margin-top:4px">${a.rule}</span></div></div>`}
+ </div></div><div class="when">${a.when}<br><span class="pill ${a.sev==='bad'?'bad':'warn'}" style="margin-top:4px">${a.rule}</span></div></div>`}
 function stripColor(k){return {route:'var(--good)',charging:'var(--s1)',low:'var(--bad)',depot:'var(--line-2)',idle:'var(--warn)'}[k]}
 function strip(c){return `<div class="strip">${Object.keys(STL).map(k=>c[k]?`<i style="flex:${c[k]};background:${stripColor(k)}"></i>`:'').join('')}</div>`}
 function netBars(){const by={};SESSIONS.forEach(r=>{by[r[2]]=(by[r[2]]||0)+r[6]});const max=Math.max(...Object.values(by));return `<div class="bar-chart">${Object.entries(by).map(([k,v])=>`<div class="bar-row"><div style="font-weight:600">${k}</div><div class="track"><i style="width:${v/max*100}%;background:var(--s1)"></i></div><div class="n">${v.toFixed(0)} kWh</div></div>`).join('')}</div>`}
@@ -469,11 +472,11 @@ function drawer(){const v=V.find(x=>x.id===S.sel);if(!v)return '';const d=depot(
  </div></div></aside>`}
 
 /* ---------- render ---------- */
-const TITLES={overview:'Overview',alerts:'Alerts',map:'Live map',vehicles:'Vehicles',sessions:'Charging sessions',costs:'Costs',depots:'Depots & chargers',policy:'Fleet policy',rules:'Alert rules'};
+const TITLES={overview:'Overview',alerts:'Alerts',map:'Live map',vehicles:'Vehicles',sessions:'Charging sessions',costs:'Cost & reports',depots:'Depots & chargers',policy:'Fleet policy',rules:'Alert rules'};
 function render(){$('#content').innerHTML=VIEWS[S.view]();$('#title').textContent=TITLES[S.view];document.querySelectorAll('.nav').forEach(b=>b.classList.toggle('on',b.dataset.view===S.view));$('#alertCnt').textContent=alerts().filter(a=>!S.acked.has(a.id)&&a.sev!=='info').length;$('#rail').classList.remove('open');$('#railScrim').classList.remove('open');renderLayer()}
 function renderLayer(){$('#layer').innerHTML=(S.sel?drawer():'')+(S.toast?`<div class="toast">${I.check}${S.toast}</div>`:'')}
 
-document.addEventListener('click',e=>{const b=e.target.closest('[data-view],[data-filter],[data-sel],[data-close],[data-ack],[data-resolve],[data-instruct],[data-call],[data-toast]');if(!b)return;const d=b.dataset;
+document.addEventListener('click',e=>{const b=e.target.closest('[data-view],[data-filter],[data-sel],[data-close],[data-ack],[data-resolve],[data-instruct],[data-call],[data-wa],[data-toast]');if(!b)return;const d=b.dataset;
  if(d.view){S.view=d.view;S.filter='all';S.q='';render();window.scrollTo(0,0);return}
  if(d.filter){S.filter=d.filter;render();return}
  if(d.sel){S.sel=d.sel;renderLayer();return}
@@ -482,6 +485,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-view],[dat
  if(d.resolve){S.resolved.add(d.resolve);render();toast('Resolved');return}
  if(d.instruct){S.instructed.add(d.instruct);const v=V.find(x=>x.id===d.instruct);v.routing=true;render();toast(`"Charge now" sent to ${v.plate}. Driver app opened charging options.`);return}
  if(d.call){const v=V.find(x=>x.id===d.call);toast(`Calling van phone ${v.phone}`);return}
+ if(d.wa){const v=V.find(x=>x.id===d.wa);toast(`WhatsApp opened to van phone ${v.phone}`);return}
  if(d.toast){toast(d.toast);return}
 });
 document.addEventListener('input',e=>{const id=e.target.id;
