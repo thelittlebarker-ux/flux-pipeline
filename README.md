@@ -59,3 +59,15 @@ flux-cloud/
 └── data/
     └── pipeline.json   # Auto-created on first save
 ```
+
+## drivEV Route Optimiser prototype
+
+Static, clickable prototypes served from the same Express server under `public/drivev/`:
+
+| Path | What it is |
+|---|---|
+| `/drivev/` | Entry page with the Pos Malaysia demo script |
+| `/drivev/portal/` | Fleet Command portal for the operations manager (desktop first, works on phone) |
+| `/drivev/driver/` | Driver app in a phone frame, with demo controls, EN / BM toggle |
+
+Each page is a single self-contained HTML file with sample data and no build step. Vehicles, chargers, depots and prices are illustrative for the POC discussion.
