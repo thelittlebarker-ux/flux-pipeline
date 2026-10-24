@@ -1,0 +1,368 @@
+<title>Starting the B2C Platform</title>
+<meta name="description" content="drivEV Flux 2.0 B2C platform business case for CY/Board: asset-light launch, market entry, and the honest path to a ~24-month payback.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --accent:#00A14B; --accent2:#00BFA6; --ink:#0E2118; --muted:#5A6B62; --faint:#889A90;
+  --surface:#FFFFFF; --panel:#F4F8F5; --panel2:#EAF1EC; --page:#FFFFFF; --line:#DBE4DD; --line2:#CBD8CF;
+  --warn:#C47A08; --danger:#DC4A5C; --gold:#CF9F2B;
+  --grad:linear-gradient(135deg,#00B255,#00C2A8);
+  --shadow:0 18px 44px rgba(10,40,25,.10),0 2px 6px rgba(10,40,25,.05);
+  --seq0:#0B6B3A; --seq1:#12A150; --seq2:#3FC38F; --seq3:#9BE0C6;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace; --sans:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --ink:#EAF3ED; --muted:#9DB2A6; --faint:#6E857A; --surface:#0F211A; --panel:#14291F; --panel2:#193024;
+  --page:#07120D; --line:#22392C; --line2:#2C4536; } }
+:root[data-theme="dark"]{
+  --ink:#EAF3ED; --muted:#9DB2A6; --faint:#6E857A; --surface:#0F211A; --panel:#14291F; --panel2:#193024;
+  --page:#07120D; --line:#22392C; --line2:#2C4536; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.5;}
+.deck{max-width:1180px;margin:0 auto;padding:34px 22px 60px;display:flex;flex-direction:column;gap:26px;}
+.slide{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);
+  padding:44px 50px;position:relative;overflow:hidden;aspect-ratio:16/9;display:flex;flex-direction:column;}
+@media (max-width:720px){ .slide{aspect-ratio:auto;padding:28px 22px;} }
+.slide::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--grad);opacity:.9;}
+.shead{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:14px;}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:600;}
+.snum{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.1em;}
+.slide h2{font-size:27px;line-height:1.14;font-weight:800;margin:0 0 6px;letter-spacing:-.02em;text-wrap:balance;max-width:26ch;}
+.lede{font-size:15px;color:var(--muted);max-width:66ch;margin:0;}
+.sbody{flex:1;display:flex;flex-direction:column;justify-content:center;min-height:0;}
+.sfoot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;padding-top:12px;border-top:1px solid var(--line);
+  font-size:10.5px;color:var(--faint);font-family:var(--mono);letter-spacing:.04em;}
+.wordmark{font-weight:800;font-family:var(--sans);letter-spacing:-.01em;color:var(--muted);font-size:11px;}
+.wordmark b{color:var(--accent);}
+.tile{width:34px;height:34px;border-radius:9px;background:var(--grad);display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,161,75,.35);flex:none;}
+.tile svg{width:19px;height:19px;}
+.cover{justify-content:space-between;}
+.cover .brandrow{display:flex;align-items:center;gap:12px;}
+.cover .brandrow .nm{font-weight:800;font-size:15px;}.cover .brandrow .nm b{color:var(--accent);}
+.cover .brandrow .kick{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-top:1px;}
+.cover h1{font-size:50px;line-height:1.02;font-weight:800;letter-spacing:-.03em;margin:0;text-wrap:balance;max-width:20ch;}
+.cover h1 .em{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.cover .csub{font-size:17px;color:var(--muted);max-width:56ch;margin:14px 0 0;line-height:1.45;}
+.cover .cmeta{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:12px;}
+.kpistrip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px;}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 15px;}
+.kpi .v{font-size:23px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.05;}
+.kpi .v small{font-size:13px;font-weight:700;color:var(--muted);}
+.kpi .l{font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-top:7px;}
+.kpi.hot .v{color:var(--accent);}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center;height:100%;}
+.cols5-7{display:grid;grid-template-columns:1.05fr 1.3fr;gap:28px;align-items:center;height:100%;}
+@media (max-width:720px){.cols2,.cols5-7{grid-template-columns:1fr;gap:18px;}}
+.points{display:flex;flex-direction:column;gap:14px;margin:4px 0 0;padding:0;list-style:none;}
+.points li{display:flex;gap:12px;align-items:flex-start;}
+.points .mk{font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--accent);border:1px solid var(--line2);
+  border-radius:6px;padding:3px 7px;flex:none;margin-top:1px;background:var(--panel);white-space:nowrap;}
+.points .tx{font-size:14.5px;}.points .tx b{font-weight:700;}
+.flow{display:flex;align-items:stretch;gap:0;margin:6px 0;flex-wrap:wrap;}
+.fstep{flex:1;min-width:120px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 14px;}
+.fstep .fs-l{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600;}
+.fstep .fs-t{font-weight:700;font-size:13.5px;margin:5px 0 3px;}
+.fstep .fs-d{font-size:11px;color:var(--muted);line-height:1.38;}
+.farrow{display:grid;place-items:center;width:24px;flex:none;color:var(--accent2);font-weight:800;font-size:17px;}
+@media (max-width:720px){.farrow{width:100%;height:18px;transform:rotate(90deg);}}
+.callout{border-radius:12px;padding:13px 15px;font-size:13px;line-height:1.45;display:flex;gap:11px;align-items:flex-start;}
+.callout .ic{flex:none;margin-top:1px;font-family:var(--mono);font-weight:700;}
+.callout.warn{background:color-mix(in srgb,var(--warn) 9%,var(--surface));border:1px solid color-mix(in srgb,var(--warn) 35%,var(--line));}
+.callout.warn b{color:var(--warn);}
+.callout.note{background:var(--panel);border:1px solid var(--line);}
+.callout.bad{background:color-mix(in srgb,var(--danger) 8%,var(--surface));border:1px solid color-mix(in srgb,var(--danger) 32%,var(--line));}
+.callout.bad b{color:var(--danger);}
+.callout .ttl{font-weight:700;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;}
+.chartwrap svg{width:100%;height:auto;display:block;overflow:visible;}
+.axnote{font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:8px;}
+table{border-collapse:collapse;width:100%;font-size:12.5px;}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+th{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono);}
+tbody tr:last-child td{border-bottom:none;}
+tr.me td{background:color-mix(in srgb,var(--accent) 8%,transparent);font-weight:600;}
+.pillars{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.pillar{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;border-top:4px solid var(--accent);}
+.pillar h3{margin:0 0 6px;font-size:16px;}.pillar p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.45;}
+.ecobar{margin-top:14px;background:color-mix(in srgb,var(--accent) 10%,var(--panel));border:1px dashed var(--line2);border-radius:10px;
+  padding:11px 14px;font-size:12px;color:var(--muted);text-align:center;font-family:var(--mono);letter-spacing:.03em;}
+.quad{position:relative;aspect-ratio:1.5/1;border:1px solid var(--line);border-radius:12px;background:var(--panel);}
+.quad .ax{position:absolute;background:var(--line2);}
+.quad .axv{left:50%;top:0;bottom:0;width:1px;}.quad .axh{top:50%;left:0;right:0;height:1px;}
+.quad .lab{position:absolute;font-family:var(--mono);font-size:9.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;}
+.quad .dot{position:absolute;transform:translate(-50%,-50%);font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px;white-space:nowrap;}
+.quad .dot.us{background:var(--accent);color:#fff;}.quad .dot.them{background:var(--panel2);border:1px solid var(--line2);color:var(--muted);}
+.gates{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.gate{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;}
+.gate .gv{font-weight:800;font-family:var(--mono);font-size:13px;color:var(--accent);}
+.gate .gl{font-size:11px;color:var(--muted);margin-top:2px;}
+.asklist{display:flex;flex-direction:column;gap:9px;margin:0;padding:0;list-style:none;}
+.asklist li{display:flex;gap:11px;align-items:flex-start;font-size:13.5px;}
+.asklist .g{font-family:var(--mono);font-size:11px;font-weight:600;color:#fff;background:var(--accent);border-radius:6px;padding:3px 8px;flex:none;margin-top:1px;}
+@media print{ body{background:#fff;} .deck{max-width:none;padding:0;gap:0;}
+  .slide{aspect-ratio:auto;width:100%;height:100vh;border-radius:0;border:none;box-shadow:none;page-break-after:always;break-after:page;padding:5vh 6vw;}
+  .slide:last-child{page-break-after:auto;} }
+@page{size:1280px 720px;margin:0;}
+</style>
+
+<div class="deck">
+
+<section class="slide cover">
+  <div class="brandrow"><div class="tile"><svg viewBox="0 0 24 24" fill="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" fill="#fff"/></svg></div>
+    <div><span class="nm">driv<b>EV</b></span><span class="kick">by Yinson GreenTech</span></div></div>
+  <div>
+    <div class="eyebrow">For CY · ahead of the Board</div>
+    <h1>Starting the <span class="em">B2C Platform</span></h1>
+    <p class="csub">Flux 2.0 — an asset-light launch. <b>Own the customer, not the car.</b></p>
+    <div class="cmeta">drivEV · October 2026 · Illustrative figures — real inputs flagged inside</div>
+  </div>
+  <div class="kpistrip">
+    <div class="kpi hot"><div class="v">RM2–4<small>m</small></div><div class="l">One-off investment</div></div>
+    <div class="kpi"><div class="v">~313<small> units</small></div><div class="l">Monthly break-even</div></div>
+    <div class="kpi"><div class="v">M19–26</div><div class="l">Path to payback*</div></div>
+    <div class="kpi"><div class="v">asset-light</div><div class="l">Hosts fund the vehicles</div></div>
+  </div>
+  <div class="sfoot"><span class="wordmark">driv<b>EV</b> · Yinson GreenTech</span><span>Confidential — internal · 01 / 12</span></div>
+</section>
+
+<section class="slide">
+  <div class="shead"><span class="eyebrow">Why now, why not the obvious way</span><span class="snum">02 / 12</span></div>
+  <div class="cols5-7" style="height:100%">
+    <div>
+      <h2>B2C is the next S-curve — but the obvious entry is how SOCAR died.</h2>
+      <p class="lede">B2B leads are thinning. Flux owns B2C on price with no retention. A cold, asset-heavy, discount-funded land-grab burns cash and strands vehicles when demand dips. We take the opposite route: <b>asset-light and demand-led.</b></p>
+    </div>
+    <div>
+      <div class="quad">
+        <div class="ax axv"></div><div class="ax axh"></div>
+        <div class="lab" style="top:6px;left:50%;transform:translateX(-50%)">ASSET-LIGHT</div>
+        <div class="lab" style="bottom:6px;left:50%;transform:translateX(-50%)">ASSET-HEAVY</div>
+        <div class="lab" style="top:50%;left:6px;transform:translateY(-50%)">PRICE-LED</div>
+        <div class="lab" style="top:50%;right:6px;transform:translateY(-50%)">DEMAND-LED</div>
+        <div class="dot us" style="left:74%;top:26%">drivEV</div>
+        <div class="dot them" style="left:26%;top:34%">Flux</div>
+        <div class="dot them" style="left:32%;top:74%">SOCAR ✕</div>
+        <div class="dot them" style="left:64%;top:70%">Avis / Orix</div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span class="wordmark">driv<b>EV</b> · B2C Platform</span><span>Confidential — internal</span></div>
+</section>
+
+<section class="slide">
+  <div class="shead"><span class="eyebrow">Keep it simple for the Board</span><span class="snum">03 / 12</span></div>
+  <h2 style="margin-bottom:12px">Two revenue streams — everything else is auxiliary margin</h2>
+  <div class="sbody">
+    <div class="pillars">
+      <div class="pillar"><h3>B2B — the cash engine</h3><p>Proven leasing base (Pos, corporates, GLCs). Funds the business and bridges into B2C.</p></div>
+      <div class="pillar" style="border-top-color:var(--accent2)"><h3>B2C — the growth engine</h3><p>Asset-light platform (Flux 2.0). The new S-curve we are asking to fund.</p></div>
+    </div>
+    <div class="ecobar">AUXILIARY MARGIN STACK&nbsp; ·&nbsp; chargEV&nbsp; ·&nbsp; insurance / NCD&nbsp; ·&nbsp; Smart-EV digital&nbsp; ·&nbsp; second-life remarketing</div>
+    <p class="lede" style="margin-top:14px">Charging, digital and loyalty are <b>margin stackers that make each unit worth more</b> — not separate businesses to pitch. Don't sell Smart-EV standalone (~RM60/vehicle, easily copied); use it to make leasing sticky.</p>
+  </div>
+  <div class="sfoot"><span class="wordmark">driv<b>EV</b> · B2C Platform</span><span>Confidential — internal</span></div>
+</section>
+
+<section class="slide">
+  <div class="shead"><span class="eyebrow">Market landscape</span><span class="snum">04 / 12</span></div>
+  <h2 style="margin-bottom:4px">A growing market, one-dimensional incumbents, a moat no financier has</h2>
+  <p class="lede" style="margin-bottom:12px">NETR targets ~15% xEV of sales by 2030 (38% by 2040). Only drivEV pairs leasing with an owned charging network and a B2B base to bridge from.</p>
+  <div class="sbody">
+    <table>
+      <thead><tr><th>Player</th><th>Model</th><th>Asset</th><th>Retention</th><th>Charging</th><th>B2B base</th></tr></thead>
+      <tbody>
+        <tr class="me"><td>drivEV (Flux 2.0)</td><td>Op-lease + platform</td><td>Light (host-funded)</td><td>Loyalty + telematics</td><td>chargEV (owned)</td><td>Yes — the bridge</td></tr>
+        <tr><td>Flux</td><td>Subscription</td><td>Own balance sheet</td><td>None — price only</td><td>Third-party</td><td>Limited</td></tr>
+        <tr><td>SOCAR ✕ (closed)</td><td>Car-sharing</td><td>Heavy</td><td>App only</td><td>Third-party</td><td>No</td></tr>
+        <tr><td>Avis / Orix</td><td>Financial lease</td><td>Capital-heavy</td><td>Contractual</td><td>Third-party</td><td>Corporate</td></tr>
+      </tbody>
+    </table>
+    <p class="axnote">Data required: TAM/SAM for MY B2C EV lease; Flux fleet size &amp; price points; confirm SOCAR closure reason.</p>
+  </div>
+  <div class="sfoot"><span class="wordmark">driv<b>EV</b> · B2C Platform</span><span>Confidential — internal</span></div>
+</section>
+
+<section class="slide">
+  <div class="shead"><span class="eyebrow">The model</span><span class="snum">05 / 12</span></div>
+  <h2 style="margin-bottom:2px">Own the customer, not the car</h2>
+  <p class="lede" style="margin-bottom:16px">Partners fund the vehicle and carry the asset + RV risk. drivEV collects payment, keeps a platform fee, and owns the customer — scaling 1,000 units without parking RM150–300m on YGT's balance sheet.</p>
+  <div class="sbody">
+    <div class="flow">
+      <div class="fstep"><div class="fs-l">Demand</div><div class="fs-t">Subscriber</div><div class="fs-d">B2C / corporate driver pays a monthly subscription to drivEV.</div></div>
+      <div class="farrow">→</div>
+      <div class="fstep"><div class="fs-l">Platform</div><div class="fs-t">drivEV keeps a fee</div><div class="fs-d">Collects payment, retains platform fee, owns the customer + data + brand.</div></div>
+      <div class="farrow">→</div>
+      <div class="fstep"><div class="fs-l">Supply</div><div class="fs-t">Host funds the car</div><div class="fs-d">5–6 partners × 30–50 units. Host bears vehicle, road-tax, insurance, maintenance, <b>RV risk</b>.</div></div>
+    </div>
+    <div class="callout warn" style="margin-top:18px"><span class="ic">!</span>
+      <div><span class="ttl">The make-or-break proof</span><br>The whole case rests on <b>partner-funded price beating Flux</b> for the same model. If it does, it's a no-brainer. <b>This is the first number Christine must bring.</b></div></div>
+  </div>
+  <div class="sfoot"><span class="wordmark">driv<b>EV</b> · B2C Platform</span><span>Confidential — internal</span></div>
+</section>
+
+<section class="slide">
+  <div class="shead"><span class="eyebrow">End-to-end, proper</span><span class="snum">06 / 12</span></div>
+  <h2 style="margin-bottom:2px">The legal spine: operational lease, the right entities &amp; licences</h2>
+  <p class="lede" style="margin-bottom:16px">We are an operational-lease business (not financial). A clean multi-entity structure and the right licences are prerequisites, not afterthoughts.</p>
+  <div class="sbody">
+    <div class="flow" style="gap:12px;flex-wrap:wrap">
+      <div class="fstep"><div class="fs-l">Estate</div><div class="fs-t">Owns / holds vehicles</div><div class="fs-d">Or host-owned under asset-light.</div></div>
+      <div class="fstep"><div class="fs-l">Commercial</div><div class="fs-t">Used-car dealership licence</div><div class="fs-d">Enables second-life resale.</div></div>
+      <div class="fstep"><div class="fs-l">Services</div><div class="fs-t">Insurance</div><div class="fs-d">Hire-and-drive cover.</div></div>
+      <div class="fstep"><div class="fs-l">digitalEV</div><div class="fs-t">Marketplace (tech co)</div><div class="fs-d">Platform sits here, as Flux does.</div></div>
+    </div>
+    <div class="callout note" style="margin-top:16px"><span class="ic">→</span>
+      <div><span class="ttl">Open items to close</span><br>Hire-and-drive vs <b>tourism-licence</b> dependency (Amanda) · CI stamping <b>pending</b> (Jun Sing) · multi-entity accounts rationale (Sumi) · align to <b>Consumer Credit Act 2025 / CCC</b> + PDPA (see COMPLIANCE-RESEARCH.md).</div></div>
+  </div>
+  <div class="sfoot"><span class="wordmark">driv<b>EV</b> · B2C Platform</span><span>Confidential — internal</span></div>
+</section>
+
+<section class="slide">
+  <div class="shead"><span class="eyebrow">Demand engine · go-to-market</span><span class="snum">07 / 12</span></div>
+  <div class="cols5-7" style="height:100%">
+    <div>
+      <h2>Every showroom becomes our sales channel.</h2>
+      <p class="lede">We don't scale on a small internal team — we turn dealers, employers and ESG mandates into demand, and we make noise.</p>
+      <ul class="points" style="margin-top:12px">
+        <li><span class="mk">OEM</span><span class="tx">Dealer showrooms (Wuling live; Stellantis, Cycle&amp;Carriage) offer leasing as the alternative to a cash sale.</span></li>
+        <li><span class="mk">Corp</span><span class="tx">Employee-benefit / expat-hire catalogue; ESG-mandate &amp; high-diesel-cost segments.</span></li>
+        <li><span class="mk">Noise</span><span class="tx">PR launch + signing ceremonies with named partners; savings-calculator + referral.</span></li>
+      </ul>
+    </div>
+    <div>
+      <div class="callout note"><span class="ic">▤</span><div><span class="ttl">Work the funnel backwards</span><br>
+      <b>400 new units</b> ÷ ~30% conversion ⇒ the monthly lead target, split across reps. <br><span style="color:var(--faint)">Data required: real lead volumes &amp; conversion by channel; media/PR budget.</span></div></div>
+      <div class="callout warn" style="margin-top:12px"><span class="ic">!</span><div>Kelvin's ask #2: not just the <i>segments</i>, but <b>how we shop to the market</b> — media, press, showroom reach.</div></div>
+    </div>
+  </div>
+  <div class="sfoot"><span class="wordmark">driv<b>EV</b> · B2C Platform</span><span>Confidential — internal</span></div>
+</section>
+
+<section class="slide">
+  <div class="shead"><span class="eyebrow">Market entry</span><span class="snum">08 / 12</span></div>
+  <h2 style="margin-bottom:2px">We will fight a price war — the question is who funds the discount</h2>
+  <p class="lede" style="margin-bottom:16px">The first two months need acquisition firepower against Flux. Before we launch, the Board must decide the funding and cap the burn.</p>
+  <div class="sbody">
+    <div class="pillars">
+      <div class="pillar" style="border-top-color:var(--warn)"><h3>The decision</h3><p>Does <b>drivEV</b> or the <b>host partner</b> fund the introductory discount? This single choice changes our cash exposure.</p></div>
+      <div class="pillar"><h3>The discipline</h3><p>Size the war chest to a defined CAC and share-of-voice target, with a <b>hard stop</b>. We don't win on price alone — chargEV + the B2B bridge lower effective CAC.</p></div>
+    </div>
+    <div class="callout bad" style="margin-top:16px"><span class="ic">$</span>
+      <div><span class="ttl">The question Kelvin will ask</span><br>"What is your war chest for this war project?" — <b>answer it with a number and a cap.</b> Inputs required: war-chest size, price-war CAC, discount-funding split.</div></div>
+  </div>
+  <div class="sfoot"><span class="wordmark">driv<b>EV</b> · B2C Platform</span><span>Confidential — internal</span></div>
+</section>
+
+<section class="slide">
+  <div class="shead"><span class="eyebrow">The numbers · the honest slide</span><span class="snum">09 / 12</span></div>
+  <h2 style="margin-bottom:2px">On platform fee alone it doesn't pay back — here's what makes it</h2>
+  <p class="lede" style="margin-bottom:10px">Monthly break-even ≈ <b>313 active units</b>. As modelled, cold-B2C base case pays back beyond 36 months. Three management-controllable levers bring it inside the target.</p>
+  <div class="sbody">
+    <div class="cols5-7">
+      <div class="chartwrap">
+        <svg id="chart-pay" viewBox="0 0 460 230" role="img" aria-label="Months to payback by lever, against a 24-month gate"></svg>
+        <div class="axnote">Dashed line = 24-month payback target</div>
+      </div>
+      <div>
+        <ul class="points">
+          <li><span class="mk">Lean</span><span class="tx">Cut fixed cost base (RM120k→70k/mo): <b>M33</b>.</span></li>
+          <li><span class="mk">Stack</span><span class="tx">Add second-life remarketing + charging + insurance margin: <b>M26</b>.</span></li>
+          <li><span class="mk">Bridge</span><span class="tx">Ramp through the B2B/salary-sacrifice bridge, not cold CAC: <b>M19</b> — beats target.</span></li>
+        </ul>
+        <div class="callout note" style="margin-top:12px"><span class="ic">i</span><div>Scenarios (end-M24 units): Worst 200 · Conservative 400 · Base 650 · Upside 1,000. Y2 contribution turns positive from Base up.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span class="wordmark">driv<b>EV</b> · B2C Platform</span><span>Confidential — internal</span></div>
+</section>
+
+<section class="slide">
+  <div class="shead"><span class="eyebrow">Supply advantage</span><span class="snum">10 / 12</span></div>
+  <div class="cols2" style="height:100%">
+    <div>
+      <h2 style="margin-bottom:8px">The 143 + 136 returning Pos e-vans are supply, not a problem.</h2>
+      <p class="lede">Under the Commercial entity's used-car licence, we remarket the returning fleet into the B2C platform as <b>lower-cost, de-risked supply</b> — improving unit economics and giving the platform inventory to launch with.</p>
+    </div>
+    <div>
+      <div class="flow" style="flex-direction:column;gap:10px">
+        <div class="fstep"><div class="fs-l">Return</div><div class="fs-t">143 + 136 e-vans come back</div><div class="fs-d">Over the Pos lease term.</div></div>
+        <div class="fstep"><div class="fs-l">Convert</div><div class="fs-t">Title &amp; registration</div><div class="fs-d">Resolve conversion from client name early.</div></div>
+        <div class="fstep"><div class="fs-l">Remarket</div><div class="fs-t">Into B2C as second-life supply</div><div class="fs-d">Cheaper inventory → better unit economics.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="sfoot"><span class="wordmark">driv<b>EV</b> · B2C Platform</span><span>Confidential — internal</span></div>
+</section>
+
+<section class="slide">
+  <div class="shead"><span class="eyebrow">Risks &amp; gates</span><span class="snum">11 / 12</span></div>
+  <h2 style="margin-bottom:12px">The three risks that decide this — named and gated</h2>
+  <div class="sbody">
+    <table>
+      <thead><tr><th>Risk</th><th>Why it bites</th><th>Mitigation / gate</th></tr></thead>
+      <tbody>
+        <tr><td><b>Residual value</b></td><td>China used-EV price war compresses RV</td><td>Asset-light pushes RV to hosts; OEM buyback / RV guarantee at order</td></tr>
+        <tr><td><b>Demand–supply</b></td><td>No demand ⇒ host partners walk</td><td>Gate ramp to committed demand; keep run-rate lean</td></tr>
+        <tr><td><b>War-chest / price war</b></td><td>Unfunded discount burns cash</td><td>Hard cap; co-fund with partners; don't win on price alone</td></tr>
+        <tr><td>Compliance</td><td>PDPA, e-money, financing, insurance</td><td>Closed-loop Eco-Credits; CCA 2025; FSA score-and-refer (see research)</td></tr>
+      </tbody>
+    </table>
+    <p class="axnote">Residual value is the swing factor on equity return — the same lesson as the Next-1,000 unit model.</p>
+  </div>
+  <div class="sfoot"><span class="wordmark">driv<b>EV</b> · B2C Platform</span><span>Confidential — internal</span></div>
+</section>
+
+<section class="slide">
+  <div class="shead"><span class="eyebrow">The ask</span><span class="snum">12 / 12</span></div>
+  <div class="cols2" style="height:100%;align-items:start">
+    <div>
+      <h2 style="margin-bottom:12px">Approve a gated POC — build, launch, 5–6 partners.</h2>
+      <ul class="asklist">
+        <li><span class="g">1</span><span>Fund <b>~RM2–4m</b>: platform build, PR launch, war chest, first host-partner cohort.</span></li>
+        <li><span class="g">2</span><span>Brief <b>CY → Louisa → Board</b> with worst/base/upside numbers and a clear recommendation.</span></li>
+        <li><span class="g">3</span><span>Replace placeholders with the <b>real inputs</b> before CY (partner price vs Flux, war chest, opex, lead volumes).</span></li>
+      </ul>
+    </div>
+    <div>
+      <div class="eyebrow" style="margin-bottom:10px">Go / no-go gates before scale</div>
+      <div class="gates">
+        <div class="gate"><div class="gv">&lt; Flux</div><div class="gl">Partner-funded price beats Flux</div></div>
+        <div class="gate"><div class="gv">≤ 24 mo</div><div class="gl">Payback on the three levers</div></div>
+        <div class="gate"><div class="gv">demand-first</div><div class="gl">Committed demand before supply</div></div>
+        <div class="gate"><div class="gv">capped</div><div class="gl">War chest with a hard stop</div></div>
+      </div>
+      <div class="callout note" style="margin-top:14px"><span class="ic">✓</span><div><span class="ttl">The recommendation</span><br>Yes — but asset-light, lean, demand-led, and ramped through the B2B bridge. Not a cold price war.</div></div>
+    </div>
+  </div>
+  <div class="sfoot"><span class="wordmark">driv<b>EV</b> · Yinson GreenTech</span><span>Confidential — internal · 12 / 12</span></div>
+</section>
+
+</div>
+
+<script>
+const D = {"netPerUnit":384,"feeOnlyNet":264,"beUnits":313,"scen":{"Worst":{"end":200,"invest":2000000,"payback":null,"y2con":-729600},"Conservative":{"end":400,"invest":2500000,"payback":null,"y2con":-19200},"Base":{"end":650,"invest":3000000,"payback":null,"y2con":868992},"Upside":{"end":1000,"invest":4000000,"payback":32,"y2con":2112000}},"path":{"Base (as modelled)":null,"+ lean cost base (RM70k/mo)":33,"+ remarketing stack (net RM520/u)":26,"+ fast ramp via B2B bridge (15 mo)":19}};
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+(function(){
+  const svg=document.getElementById('chart-pay'); if(!svg)return;
+  const W=460,H=230,mL=150,mR=40,mT=10,mB=26;
+  const rows=[
+    {n:'Base (cold B2C)', m:38, cap:true, c:css('--danger')},
+    {n:'+ lean cost base', m:33, c:css('--warn')},
+    {n:'+ remarketing stack', m:26, c:css('--accent2')},
+    {n:'+ B2B-bridge ramp', m:19, c:css('--accent')}
+  ];
+  const max=40, plotW=W-mL-mR, plotH=H-mT-mB, gap=plotH/rows.length, bh=gap*0.6;
+  const x=v=>mL+(Math.min(v,max)/max)*plotW;
+  let s='';
+  [0,12,24,36].forEach(t=>{ s+='<line x1="'+x(t)+'" y1="'+mT+'" x2="'+x(t)+'" y2="'+(mT+plotH)+'" stroke="'+css('--line')+'" stroke-width="1"/>';
+    s+='<text x="'+x(t)+'" y="'+(H-8)+'" text-anchor="middle" font-family="'+css('--mono')+'" font-size="9.5" fill="'+css('--faint')+'">M'+t+'</text>'; });
+  rows.forEach((r,i)=>{ const y=mT+i*gap+(gap-bh)/2;
+    s+='<rect x="'+mL+'" y="'+y+'" width="'+(x(r.m)-mL)+'" height="'+bh+'" rx="4" fill="'+r.c+'"'+(r.cap?' opacity="0.55"':'')+'/>';
+    s+='<text x="'+(mL-10)+'" y="'+(y+bh/2+4)+'" text-anchor="end" font-family="'+css('--sans')+'" font-size="12" font-weight="600" fill="'+css('--ink')+'">'+r.n+'</text>';
+    s+='<text x="'+(x(r.m)+7)+'" y="'+(y+bh/2+4)+'" font-family="'+css('--mono')+'" font-size="11.5" font-weight="600" fill="'+css('--ink')+'">'+(r.cap?'>36':('M'+r.m))+'</text>'; });
+  s+='<line x1="'+x(24)+'" y1="'+(mT-2)+'" x2="'+x(24)+'" y2="'+(mT+plotH+2)+'" stroke="'+css('--ink')+'" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.6"/>';
+  svg.innerHTML=s;
+})();
+</script>
